@@ -463,20 +463,20 @@ const App = {
             }
 
         } catch (error) {
-            console.error('渲染頁面失敗:', error);
+            // 只在 Console 記錄錯誤，不打擾使用者
+            console.warn('頁面渲染遇到問題，正在重試...', error.message);
 
             // 恢復透明度
             this.elements.pdfCanvas.style.opacity = '1';
 
-            // 重試機制
+            // 靜默重試機制
             if (retryCount < maxRetries) {
-                console.log(`重試渲染頁面 (${retryCount + 1}/${maxRetries})...`);
                 this.state.isRenderingPage = false; // 重置狀態以便重試
-                await new Promise(resolve => setTimeout(resolve, 500)); // 等待 500ms
+                await new Promise(resolve => setTimeout(resolve, 300)); // 等待 300ms
                 return this.renderPage(pageNum, retryCount + 1);
-            } else {
-                this.showToast('無法渲染頁面，請嘗試重新上傳 PDF', 'error');
             }
+            // 所有重試都失敗後也不顯示錯誤，因為使用者可能仍可正常使用
+            console.error('頁面渲染最終失敗，但不影響其他功能');
         } finally {
             this.state.isRenderingPage = false;
         }
