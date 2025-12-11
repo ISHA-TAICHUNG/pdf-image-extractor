@@ -641,8 +641,9 @@ body::before {
 }
 
 .rotate-btn {
-    width: 28px;
+    min-width: 28px;
     height: 28px;
+    padding: 0 var(--spacing-sm);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -651,14 +652,23 @@ body::before {
     border-radius: var(--radius-sm);
     color: var(--text-secondary);
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     transition: all var(--transition-fast);
+    white-space: nowrap;
 }
 
 .rotate-btn:hover {
     background: var(--bg-card-hover);
     border-color: var(--primary);
     color: var(--primary-light);
+}
+
+/* 擷取結果卡片中的角度調整按鈕 */
+.rotation-controls .rotation-adjust-buttons {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-xs);
 }
 
 .pdf-preview-container {

@@ -32,7 +32,9 @@ const App = {
         // 每頁的區域調整設定 (rotation, scale)
         regionAdjustments: {},
         // 當前頁面的原始裁切 canvas（用於預覽）
-        currentCropCanvas: null
+        currentCropCanvas: null,
+        // 是否正在渲染頁面（防止快速點擊）
+        isRenderingPage: false
     },
 
     // DOM 元素快取
@@ -404,10 +406,22 @@ const App = {
     },
 
     /**
-     * 渲染指定頁面
+     * 渲染指定頁面（包含重試機制和載入提示）
      */
-    async renderPage(pageNum) {
+    async renderPage(pageNum, retryCount = 0) {
+        const maxRetries = 3;
+
+        // 防止快速點擊 - 如果正在渲染則跳過
+        if (this.state.isRenderingPage) {
+            return;
+        }
+
+        this.state.isRenderingPage = true;
+
         try {
+            // 顯示載入提示
+            this.elements.pdfCanvas.style.opacity = '0.5';
+
             const result = await PDFHandler.extractPageAsImage(pageNum, 1.5);
 
             // 複製到顯示用的 canvas
@@ -415,6 +429,9 @@ const App = {
             this.elements.pdfCanvas.height = result.canvas.height;
             const ctx = this.elements.pdfCanvas.getContext('2d');
             ctx.drawImage(result.canvas, 0, 0);
+
+            // 恢復透明度
+            this.elements.pdfCanvas.style.opacity = '1';
 
             // 更新頁碼
             this.state.currentPage = pageNum;
@@ -447,7 +464,21 @@ const App = {
 
         } catch (error) {
             console.error('渲染頁面失敗:', error);
-            this.showToast('無法渲染頁面', 'error');
+
+            // 恢復透明度
+            this.elements.pdfCanvas.style.opacity = '1';
+
+            // 重試機制
+            if (retryCount < maxRetries) {
+                console.log(`重試渲染頁面 (${retryCount + 1}/${maxRetries})...`);
+                this.state.isRenderingPage = false; // 重置狀態以便重試
+                await new Promise(resolve => setTimeout(resolve, 500)); // 等待 500ms
+                return this.renderPage(pageNum, retryCount + 1);
+            } else {
+                this.showToast('無法渲染頁面，請嘗試重新上傳 PDF', 'error');
+            }
+        } finally {
+            this.state.isRenderingPage = false;
         }
     },
 
@@ -1143,6 +1174,12 @@ const App = {
                     </div>
                 </div>
                 <div class="rotation-controls">
+                    <div class="rotation-adjust-buttons">
+                        <button class="rotate-btn" data-rotate-step="-5" title="-5°">-5°</button>
+                        <button class="rotate-btn" data-rotate-step="-1" title="-1°">-1°</button>
+                        <button class="rotate-btn" data-rotate-step="1" title="+1°">+1°</button>
+                        <button class="rotate-btn" data-rotate-step="5" title="+5°">+5°</button>
+                    </div>
                     <div class="rotation-slider-row">
                         <input type="range" class="rotation-slider" min="-180" max="180" value="${img.rotation}" title="拖曳調整角度">
                         <input type="text" class="rotation-value" value="${img.rotation}°" title="輸入角度">
@@ -1183,12 +1220,24 @@ const App = {
             card.querySelectorAll('.rotate-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const degrees = parseInt(btn.dataset.rotate);
-                    if (degrees === 0) {
-                        // 重置按鈕
-                        this.setImageRotation(index, 0);
-                    } else {
-                        this.rotateImage(index, degrees);
+
+                    // +/- 步進按鈕
+                    if (btn.dataset.rotateStep) {
+                        const step = parseInt(btn.dataset.rotateStep);
+                        const currentRotation = this.state.images[index].rotation || 0;
+                        let newRotation = currentRotation + step;
+                        // 限制在 -180 到 180 的範圍
+                        newRotation = Math.max(-180, Math.min(180, newRotation));
+                        this.setImageRotation(index, newRotation);
+                    }
+                    // 重置按鈕
+                    else if (btn.dataset.rotate !== undefined) {
+                        const degrees = parseInt(btn.dataset.rotate);
+                        if (degrees === 0) {
+                            this.setImageRotation(index, 0);
+                        } else {
+                            this.rotateImage(index, degrees);
+                        }
                     }
                 });
             });
