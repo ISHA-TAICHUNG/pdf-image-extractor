@@ -1028,32 +1028,44 @@ const App = {
     },
 
     /**
-     * 旋轉圖片（設定絕對角度）
+     * 旋轉圖片（設定絕對角度，固定框架模式）
      */
     setImageRotation(index, degrees) {
         const img = this.state.images[index];
-        // 確保角度在 0-360 範圍內
-        degrees = ((degrees % 360) + 360) % 360;
+        // 角度範圍 -180 到 180
+        degrees = ((degrees + 180) % 360) - 180;
         img.rotation = degrees;
 
-        // 建立旋轉後的 canvas
+        // 建立旋轉後的 canvas（固定輸出尺寸）
+        const outputWidth = this.state.targetWidth;
+        const outputHeight = this.state.targetHeight;
+
         const rotatedCanvas = document.createElement('canvas');
+        rotatedCanvas.width = outputWidth;
+        rotatedCanvas.height = outputHeight;
+
         const ctx = rotatedCanvas.getContext('2d');
-
-        // 計算旋轉後的尺寸
-        const radians = (degrees * Math.PI) / 180;
-        const cos = Math.abs(Math.cos(radians));
-        const sin = Math.abs(Math.sin(radians));
-
-        rotatedCanvas.width = img.canvas.width * cos + img.canvas.height * sin;
-        rotatedCanvas.height = img.canvas.width * sin + img.canvas.height * cos;
-
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
 
-        // 移動到中心點進行旋轉
-        ctx.translate(rotatedCanvas.width / 2, rotatedCanvas.height / 2);
+        // 填充白色背景
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, outputWidth, outputHeight);
+
+        // 計算旋轉參數
+        const radians = (degrees * Math.PI) / 180;
+
+        // 計算基礎縮放比例（讓原始圖像填滿輸出框）
+        const baseScaleX = outputWidth / img.canvas.width;
+        const baseScaleY = outputHeight / img.canvas.height;
+        const baseScale = Math.max(baseScaleX, baseScaleY);
+
+        // 移動到中心點，旋轉並縮放
+        ctx.translate(outputWidth / 2, outputHeight / 2);
         ctx.rotate(radians);
+        ctx.scale(baseScale, baseScale);
+
+        // 繪製圖像（圖像中心對齊框架中心）
         ctx.drawImage(
             img.canvas,
             -img.canvas.width / 2,
@@ -1158,14 +1170,11 @@ const App = {
                 </div>
                 <div class="rotation-controls">
                     <div class="rotation-slider-row">
-                        <input type="range" class="rotation-slider" min="0" max="360" value="${img.rotation}" title="拖曳調整角度">
-                        <input type="text" class="rotation-value" value="${img.rotation}°" title="輸入角度 (0-360)">
+                        <input type="range" class="rotation-slider" min="-180" max="180" value="${img.rotation}" title="拖曳調整角度">
+                        <input type="text" class="rotation-value" value="${img.rotation}°" title="輸入角度">
                     </div>
                     <div class="rotation-buttons">
-                        <button class="rotate-btn" data-rotate="-90" title="逆時針 90°">↺</button>
-                        <button class="rotate-btn" data-rotate="90" title="順時針 90°">↻</button>
-                        <button class="rotate-btn" data-rotate="180" title="旋轉 180°">⟲</button>
-                        <button class="rotate-btn" data-rotate="0" title="重置為 0°">⟳</button>
+                        <button class="rotate-btn" data-rotate="0" title="重置角度">⟳ 重置</button>
                     </div>
                 </div>
             `;
