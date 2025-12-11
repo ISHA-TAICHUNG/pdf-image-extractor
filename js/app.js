@@ -809,6 +809,8 @@ const App = {
     clearSelection() {
         if (this.state.selectionMode === 'uniform') {
             this.state.uniformRegion = null;
+            // 統一模式使用 key 1 儲存區域調整設定
+            delete this.state.regionAdjustments[1];
         } else {
             delete this.state.pageRegions[this.state.currentPage];
             delete this.state.regionAdjustments[this.state.currentPage];
