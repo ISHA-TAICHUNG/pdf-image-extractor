@@ -38,7 +38,7 @@ PDF 圖片擷取與重命名網頁應用程式
 
 ## 操作教學
 
-![電測截圖工具操作流程圖](assets/tutorial_flowchart.png)
+![電測截圖工具操作流程圖](assets/tutorial_instructions.png)
 
 ### 詳細步驟說明
 
