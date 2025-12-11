@@ -121,38 +121,42 @@
                     <div class="page-status-list" id="page-status-list"></div>
                 </div>
 
-                <div class="pdf-preview-container">
-                    <div class="pdf-preview-wrapper" id="pdf-preview-wrapper">
-                        <canvas id="pdf-canvas"></canvas>
-                        <div class="selection-overlay" id="selection-overlay"></div>
-                        <div class="selection-box" id="selection-box" hidden></div>
-                    </div>
-                </div>
-
-                <!-- 區域資訊與調整 -->
-                <div class="region-adjust-panel" id="region-adjust-panel" hidden>
-                    <div class="region-preview-section">
-                        <h4>📷 區域預覽</h4>
-                        <div class="region-preview-container">
-                            <canvas id="region-preview-canvas"></canvas>
+                <!-- 主要預覽區域（並排配置） -->
+                <div class="preview-layout">
+                    <!-- 左側：PDF 預覽 -->
+                    <div class="pdf-preview-container">
+                        <div class="pdf-preview-wrapper" id="pdf-preview-wrapper">
+                            <canvas id="pdf-canvas"></canvas>
+                            <div class="selection-overlay" id="selection-overlay"></div>
+                            <div class="selection-box" id="selection-box" hidden></div>
                         </div>
                     </div>
-                    <div class="region-controls-section">
-                        <h4>調整設定</h4>
-                        <div class="region-control-group">
-                            <label>角度 <span id="crop-rotation-display">0°</span></label>
-                            <input type="range" id="crop-rotation-slider" min="-180" max="180" value="0" step="1">
-                            <div class="quick-rotate-buttons">
-                                <button class="btn btn-outline btn-sm" data-rotate="0">⟳ 重置角度</button>
+
+                    <!-- 右側：區域調整面板 -->
+                    <div class="region-adjust-panel" id="region-adjust-panel" hidden>
+                        <div class="region-preview-section">
+                            <h4>📷 區域預覽</h4>
+                            <div class="region-preview-container">
+                                <canvas id="region-preview-canvas"></canvas>
                             </div>
                         </div>
-                        <div class="region-control-group">
-                            <label>縮放 <span id="crop-scale-display">100%</span></label>
-                            <input type="range" id="crop-scale-slider" min="50" max="200" value="100" step="5">
-                        </div>
-                        <div class="region-info-details">
-                            <span>位置: <strong id="region-position">-</strong></span>
-                            <span>尺寸: <strong id="region-size">-</strong></span>
+                        <div class="region-controls-section">
+                            <h4>調整設定</h4>
+                            <div class="region-control-group">
+                                <label>角度 <span id="crop-rotation-display">0°</span></label>
+                                <input type="range" id="crop-rotation-slider" min="-180" max="180" value="0" step="1">
+                                <div class="quick-rotate-buttons">
+                                    <button class="btn btn-outline btn-sm" data-rotate="0">⟳ 重置角度</button>
+                                </div>
+                            </div>
+                            <div class="region-control-group">
+                                <label>縮放 <span id="crop-scale-display">100%</span></label>
+                                <input type="range" id="crop-scale-slider" min="50" max="200" value="100" step="5">
+                            </div>
+                            <div class="region-info-details">
+                                <span>位置: <strong id="region-position">-</strong></span>
+                                <span>尺寸: <strong id="region-size">-</strong></span>
+                            </div>
                         </div>
                     </div>
                 </div>
