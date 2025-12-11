@@ -490,6 +490,17 @@ body::before {
     gap: var(--spacing-xs);
 }
 
+.rotation-adjust-buttons {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+}
+
+.rotation-adjust-buttons .btn {
+    min-width: 45px;
+}
+
 .btn-sm {
     padding: var(--spacing-xs) var(--spacing-sm);
     font-size: 0.8rem;

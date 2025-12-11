@@ -10,8 +10,8 @@ const App = {
         listLoaded: false,
         currentPage: 1,
         totalPages: 0,
-        // 選取模式: 'uniform' 或 'individual'
-        selectionMode: 'uniform',
+        // 選取模式固定為 'individual'
+        selectionMode: 'individual',
         // 統一區域 (相對於 PDF 頁面的比例)
         uniformRegion: null,
         // 每頁個別區域
@@ -76,7 +76,6 @@ const App = {
             nextPageBtn: document.getElementById('next-page-btn'),
             currentPageSpan: document.getElementById('current-page'),
             totalPagesSpan: document.getElementById('total-pages'),
-            selectionModeSelect: document.getElementById('selection-mode'),
             clearRegionBtn: document.getElementById('clear-region-btn'),
             applyRegionBtn: document.getElementById('apply-region-btn'),
             individualProgress: document.getElementById('individual-progress'),
@@ -182,12 +181,6 @@ const App = {
             this.goToPage(this.state.currentPage + 1);
         });
 
-        // 選取模式變更
-        this.elements.selectionModeSelect.addEventListener('change', (e) => {
-            this.state.selectionMode = e.target.value;
-            this.updateSelectionModeUI();
-        });
-
         // 區域選取
         this.elements.pdfPreviewWrapper.addEventListener('mousedown', (e) => {
             this.startSelection(e);
@@ -247,6 +240,19 @@ const App = {
                 const degrees = parseInt(btn.dataset.rotate);
                 this.elements.cropRotationSlider.value = degrees;
                 this.updateCropAdjustments(degrees, null);
+            });
+        });
+
+        // +/- 角度調整按鈕
+        document.querySelectorAll('.rotation-adjust-buttons button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const step = parseInt(btn.dataset.rotateStep);
+                const currentRotation = parseInt(this.elements.cropRotationSlider.value);
+                let newRotation = currentRotation + step;
+                // 限制在 -180 到 180 的範圍
+                newRotation = Math.max(-180, Math.min(180, newRotation));
+                this.elements.cropRotationSlider.value = newRotation;
+                this.updateCropAdjustments(newRotation, null);
             });
         });
 
@@ -360,13 +366,10 @@ const App = {
      * 更新選取模式 UI
      */
     updateSelectionModeUI() {
-        if (this.state.selectionMode === 'individual') {
-            this.elements.individualProgress.hidden = false;
-            this.renderPageStatusList();
-            this.updateApplyButtonState();
-        } else {
-            this.elements.individualProgress.hidden = true;
-        }
+        // 固定為逐頁選取模式
+        this.elements.individualProgress.hidden = false;
+        this.renderPageStatusList();
+        this.updateApplyButtonState();
     },
 
     /**
@@ -425,10 +428,7 @@ const App = {
             this.drawCurrentPageSelection();
 
             // 更新區域調整面板（如果有選取區域）
-            if (this.state.selectionMode === 'uniform' && this.state.uniformRegion) {
-                this.updateRegionPreview();
-                this.elements.regionAdjustPanel.hidden = false;
-            } else if (this.state.pageRegions[pageNum]) {
+            if (this.state.pageRegions[pageNum]) {
                 const adj = this.state.regionAdjustments[pageNum] || { rotation: 0, scale: 100 };
                 this.elements.cropRotationSlider.value = adj.rotation;
                 this.elements.cropRotationDisplay.textContent = adj.rotation + '°';
@@ -517,13 +517,7 @@ const App = {
      * 繪製當前頁面的選取區域
      */
     drawCurrentPageSelection() {
-        let region = null;
-
-        if (this.state.selectionMode === 'uniform') {
-            region = this.state.uniformRegion;
-        } else {
-            region = this.state.pageRegions[this.state.currentPage];
-        }
+        let region = this.state.pageRegions[this.state.currentPage];
 
         if (region) {
             const rect = this.elements.pdfCanvas.getBoundingClientRect();
@@ -622,7 +616,7 @@ const App = {
             return;
         }
 
-        // 儲存選取區域 (相對於 canvas 的比例)
+        // 儲存選取區域（相對於 canvas 的比例）
         const region = {
             x: left / canvasWidth,
             y: top / canvasHeight,
@@ -630,15 +624,12 @@ const App = {
             height: height / canvasHeight
         };
 
-        if (this.state.selectionMode === 'uniform') {
-            this.state.uniformRegion = region;
-        } else {
-            this.state.pageRegions[this.state.currentPage] = region;
-            this.renderPageStatusList();
-        }
+        // 固定為逐頁選取模式
+        this.state.pageRegions[this.state.currentPage] = region;
+        this.renderPageStatusList();
 
-        // 初始化區域調整設定（統一模式使用固定 key 1）
-        const adjKey = this.state.selectionMode === 'uniform' ? 1 : this.state.currentPage;
+        // 初始化區域調整設定
+        const adjKey = this.state.currentPage;
         if (!this.state.regionAdjustments[adjKey]) {
             this.state.regionAdjustments[adjKey] = {
                 rotation: 0,
@@ -674,9 +665,7 @@ const App = {
      */
     async updateRegionPreview() {
         const pageNum = this.state.currentPage;
-        let region = this.state.selectionMode === 'uniform'
-            ? this.state.uniformRegion
-            : this.state.pageRegions[pageNum];
+        let region = this.state.pageRegions[pageNum];
 
         if (!region) return;
 
@@ -713,8 +702,8 @@ const App = {
     renderCropPreview() {
         if (!this.state.currentCropCanvas) return;
 
-        // 統一模式使用固定 key (1)，否則使用當前頁碼
-        const adjKey = this.state.selectionMode === 'uniform' ? 1 : this.state.currentPage;
+        // 使用當前頁碼作為 key
+        const adjKey = this.state.currentPage;
         const adj = this.state.regionAdjustments[adjKey] || { rotation: 0, scale: 100 };
         const sourceCanvas = this.state.currentCropCanvas;
 
@@ -770,8 +759,8 @@ const App = {
      * 更新區域調整設定
      */
     updateCropAdjustments(rotation, scale) {
-        // 統一模式使用固定 key (1)，否則使用當前頁碼
-        const adjKey = this.state.selectionMode === 'uniform' ? 1 : this.state.currentPage;
+        // 使用當前頁碼作為 key
+        const adjKey = this.state.currentPage;
 
         if (!this.state.regionAdjustments[adjKey]) {
             this.state.regionAdjustments[adjKey] = { rotation: 0, scale: 100 };
@@ -795,27 +784,17 @@ const App = {
      * 更新確認按鈕狀態
      */
     updateApplyButtonState() {
-        if (this.state.selectionMode === 'uniform') {
-            this.elements.applyRegionBtn.disabled = !this.state.uniformRegion;
-        } else {
-            // 至少要有一頁選取
-            this.elements.applyRegionBtn.disabled = Object.keys(this.state.pageRegions).length === 0;
-        }
+        // 至少要有一頁選取
+        this.elements.applyRegionBtn.disabled = Object.keys(this.state.pageRegions).length === 0;
     },
 
     /**
      * 清除選取
      */
     clearSelection() {
-        if (this.state.selectionMode === 'uniform') {
-            this.state.uniformRegion = null;
-            // 統一模式使用 key 1 儲存區域調整設定
-            delete this.state.regionAdjustments[1];
-        } else {
-            delete this.state.pageRegions[this.state.currentPage];
-            delete this.state.regionAdjustments[this.state.currentPage];
-            this.renderPageStatusList();
-        }
+        delete this.state.pageRegions[this.state.currentPage];
+        delete this.state.regionAdjustments[this.state.currentPage];
+        this.renderPageStatusList();
 
         this.state.currentCropCanvas = null;
         this.elements.selectionBox.hidden = true;
@@ -827,12 +806,7 @@ const App = {
      * 套用區域，進入設定步驟
      */
     applyRegion() {
-        if (this.state.selectionMode === 'uniform' && !this.state.uniformRegion) {
-            this.showToast('請先選取照片區域', 'warning');
-            return;
-        }
-
-        if (this.state.selectionMode === 'individual' && Object.keys(this.state.pageRegions).length === 0) {
+        if (Object.keys(this.state.pageRegions).length === 0) {
             this.showToast('請至少選取一頁的照片區域', 'warning');
             return;
         }
@@ -933,18 +907,11 @@ const App = {
             // 決定要擷取哪些頁面
             let pagesToExtract = [];
 
-            if (this.state.selectionMode === 'uniform') {
-                // 統一模式：所有頁面使用相同區域
-                for (let i = 1; i <= this.state.totalPages; i++) {
-                    pagesToExtract.push({ page: i, region: this.state.uniformRegion });
-                }
-            } else {
-                // 逐頁模式：只擷取有選取區域的頁面
-                for (const [page, region] of Object.entries(this.state.pageRegions)) {
-                    pagesToExtract.push({ page: parseInt(page), region: region });
-                }
-                pagesToExtract.sort((a, b) => a.page - b.page);
+            // 逐頁模式：只擷取有選取區域的頁面
+            for (const [page, region] of Object.entries(this.state.pageRegions)) {
+                pagesToExtract.push({ page: parseInt(page), region: region });
             }
+            pagesToExtract.sort((a, b) => a.page - b.page);
 
             for (let i = 0; i < pagesToExtract.length; i++) {
                 const { page, region } = pagesToExtract[i];
@@ -974,8 +941,8 @@ const App = {
                     0, 0, cropWidth, cropHeight
                 );
 
-                // 取得區域調整設定（統一模式使用第一頁的設定，否則使用當前頁的設定）
-                const adjKey = this.state.selectionMode === 'uniform' ? 1 : page;
+                // 取得區域調整設定
+                const adjKey = page;
                 const adj = this.state.regionAdjustments[adjKey] || { rotation: 0, scale: 100 };
 
                 // 套用旋轉和縮放，直接輸出目標尺寸（固定框架，圖像在框內旋轉）

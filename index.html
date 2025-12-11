@@ -100,13 +100,7 @@
                             頁</span>
                         <button class="btn btn-outline" id="next-page-btn">下一頁 ▶</button>
                     </div>
-                    <div class="selection-mode">
-                        <label>選取模式：</label>
-                        <select id="selection-mode">
-                            <option value="uniform">統一區域（套用到所有頁面）</option>
-                            <option value="individual">逐頁選取（每頁個別框選）</option>
-                        </select>
-                    </div>
+
                     <div class="region-actions">
                         <button class="btn btn-outline" id="clear-region-btn">清除選取</button>
                         <button class="btn btn-primary" id="apply-region-btn" disabled>確認並繼續</button>
@@ -144,6 +138,12 @@
                             <h4>調整設定</h4>
                             <div class="region-control-group">
                                 <label>角度 <span id="crop-rotation-display">0°</span></label>
+                                <div class="rotation-adjust-buttons">
+                                    <button class="btn btn-outline btn-sm" data-rotate-step="-5">-5°</button>
+                                    <button class="btn btn-outline btn-sm" data-rotate-step="-1">-1°</button>
+                                    <button class="btn btn-outline btn-sm" data-rotate-step="1">+1°</button>
+                                    <button class="btn btn-outline btn-sm" data-rotate-step="5">+5°</button>
+                                </div>
                                 <input type="range" id="crop-rotation-slider" min="-180" max="180" value="0" step="1">
                                 <div class="quick-rotate-buttons">
                                     <button class="btn btn-outline btn-sm" data-rotate="0">⟳ 重置角度</button>
