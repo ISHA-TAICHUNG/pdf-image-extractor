@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>電測截圖工具 - PDF 圖片擷取與重命名</title>
+    <meta name="description" content="從 PDF 擷取照片並使用清單重命名，支援 DPI 300、531x413 像素規格驗證">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <!-- SheetJS for Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <!-- JSZip for ZIP download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <!-- FileSaver.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">📷</span>
+                    <h1>電測截圖工具</h1>
+                </div>
+                <p class="subtitle">PDF 圖片擷取與重命名工具</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Step 1: Upload Section -->
+            <section class="upload-section" id="step-upload">
+                <div class="step-header">
+                    <span class="step-number">1</span>
+                    <h2>上傳檔案</h2>
+                </div>
+                <div class="upload-grid">
+                    <!-- PDF Upload -->
+                    <div class="upload-card" id="pdf-upload-card">
+                        <div class="upload-zone" id="pdf-drop-zone">
+                            <div class="upload-icon">📄</div>
+                            <h3>上傳 PDF 檔案</h3>
+                            <p>拖放 PDF 檔案至此，或點擊選擇檔案</p>
+                            <input type="file" id="pdf-input" accept=".pdf" hidden>
+                            <button class="btn btn-primary" id="pdf-browse-btn">選擇 PDF</button>
+                        </div>
+                        <div class="file-info" id="pdf-info" hidden>
+                            <span class="file-name" id="pdf-name"></span>
+                            <span class="file-pages" id="pdf-pages"></span>
+                            <button class="btn-icon" id="pdf-remove" title="移除檔案">✕</button>
+                        </div>
+                    </div>
+
+                    <!-- List Upload -->
+                    <div class="upload-card" id="list-upload-card">
+                        <div class="upload-zone" id="list-drop-zone">
+                            <div class="upload-icon">📋</div>
+                            <h3>上傳名稱清單（選用）</h3>
+                            <p>支援 CSV, TXT, xlsx, xlsm 格式</p>
+                            <input type="file" id="list-input" accept=".csv,.txt,.xlsx,.xlsm" hidden>
+                            <button class="btn btn-secondary" id="list-browse-btn">選擇清單</button>
+                        </div>
+                        <div class="file-info" id="list-info" hidden>
+                            <span class="file-name" id="list-name"></span>
+                            <span class="file-count" id="list-count"></span>
+                            <button class="btn-icon" id="list-remove" title="移除檔案">✕</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 2: Region Selection -->
+            <section class="region-section" id="step-region" hidden>
+                <div class="step-header">
+                    <span class="step-number">2</span>
+                    <h2>框選照片區域</h2>
+                    <p class="step-hint">在下方 PDF 預覽中，用滑鼠拖曳框選照片的位置</p>
+                </div>
+
+                <div class="region-tools">
+                    <div class="page-nav">
+                        <button class="btn btn-outline" id="prev-page-btn" disabled>◀ 上一頁</button>
+                        <span class="page-info">第 <span id="current-page">1</span> / <span id="total-pages">1</span>
+                            頁</span>
+                        <button class="btn btn-outline" id="next-page-btn">下一頁 ▶</button>
+                    </div>
+                    <div class="selection-mode">
+                        <label>選取模式：</label>
+                        <select id="selection-mode">
+                            <option value="uniform">統一區域（套用到所有頁面）</option>
+                            <option value="individual">逐頁選取（每頁個別框選）</option>
+                        </select>
+                    </div>
+                    <div class="region-actions">
+                        <button class="btn btn-outline" id="clear-region-btn">清除選取</button>
+                        <button class="btn btn-primary" id="apply-region-btn" disabled>確認並繼續</button>
+                    </div>
+                </div>
+
+                <!-- 逐頁選取進度 -->
+                <div class="individual-progress" id="individual-progress" hidden>
+                    <div class="progress-info">
+                        已選取 <span id="selected-pages-count">0</span> / <span id="total-pages-count">0</span> 頁
+                    </div>
+                    <div class="page-status-list" id="page-status-list"></div>
+                </div>
+
+                <div class="pdf-preview-container">
+                    <div class="pdf-preview-wrapper" id="pdf-preview-wrapper">
+                        <canvas id="pdf-canvas"></canvas>
+                        <div class="selection-overlay" id="selection-overlay"></div>
+                        <div class="selection-box" id="selection-box" hidden></div>
+                    </div>
+                </div>
+
+                <!-- 區域資訊與調整 -->
+                <div class="region-adjust-panel" id="region-adjust-panel" hidden>
+                    <div class="region-preview-section">
+                        <h4>📷 區域預覽</h4>
+                        <div class="region-preview-container">
+                            <canvas id="region-preview-canvas"></canvas>
+                        </div>
+                    </div>
+                    <div class="region-controls-section">
+                        <h4>調整設定</h4>
+                        <div class="region-control-group">
+                            <label>角度 <span id="crop-rotation-display">0°</span></label>
+                            <input type="range" id="crop-rotation-slider" min="-180" max="180" value="0" step="1">
+                            <div class="quick-rotate-buttons">
+                                <button class="btn btn-outline btn-sm" data-rotate="0">⟳ 重置角度</button>
+                            </div>
+                        </div>
+                        <div class="region-control-group">
+                            <label>縮放 <span id="crop-scale-display">100%</span></label>
+                            <input type="range" id="crop-scale-slider" min="50" max="200" value="100" step="5">
+                        </div>
+                        <div class="region-info-details">
+                            <span>位置: <strong id="region-position">-</strong></span>
+                            <span>尺寸: <strong id="region-size">-</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 3: Settings & Preview -->
+            <section class="settings-section" id="step-settings" hidden>
+                <div class="step-header">
+                    <span class="step-number">3</span>
+                    <h2>設定與預覽</h2>
+                </div>
+
+                <div class="settings-card">
+                    <h3>輸出設定</h3>
+                    <div class="settings-grid">
+                        <div class="setting-group">
+                            <label for="output-format">輸出格式</label>
+                            <select id="output-format">
+                                <option value="jpeg">JPEG</option>
+                                <option value="png">PNG</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label for="naming-mode">命名方式</label>
+                            <select id="naming-mode">
+                                <option value="sequential">依序對應清單</option>
+                                <option value="manual">手動選擇名稱</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label for="jpeg-quality">JPEG 品質</label>
+                            <input type="range" id="jpeg-quality" min="0.5" max="1" step="0.05" value="0.92">
+                            <span id="quality-value">92%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Processing Progress -->
+                <div class="progress-card" id="progress-card" hidden>
+                    <h3 id="progress-title">處理中...</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <p class="progress-text" id="progress-text">準備中...</p>
+                </div>
+
+                <!-- Image Specifications Info -->
+                <div class="specs-card">
+                    <h3>📐 圖片規格要求</h3>
+                    <div class="specs-grid">
+                        <div class="spec-item">
+                            <span class="spec-label">DPI</span>
+                            <span class="spec-value">300</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">寬度</span>
+                            <span class="spec-value">413 px</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">高度</span>
+                            <span class="spec-value">531 px</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">檔案大小</span>
+                            <span class="spec-value">≤ 1 MB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="extract-action">
+                    <button class="btn btn-primary btn-large" id="extract-btn">
+                        🚀 開始擷取所有頁面的照片
+                    </button>
+                </div>
+            </section>
+
+            <!-- Step 4: Results -->
+            <section class="preview-section" id="step-results" hidden>
+                <div class="step-header">
+                    <span class="step-number">4</span>
+                    <h2>擷取結果 (<span id="image-count">0</span> 張照片)</h2>
+                </div>
+
+                <div class="preview-actions">
+                    <button class="btn btn-outline" id="select-all-btn">全選</button>
+                    <button class="btn btn-primary" id="download-btn" disabled>
+                        <span>⬇️</span>
+                        下載選取的圖片
+                    </button>
+                </div>
+
+                <div class="images-grid" id="images-grid">
+                    <!-- Images will be dynamically inserted here -->
+                </div>
+
+                <!-- Name List Preview (for manual mode) -->
+                <div class="name-list-card" id="name-list-section" hidden>
+                    <h3>📝 名稱清單預覽</h3>
+                    <div class="name-list-container" id="name-list-container">
+                        <!-- Names will be dynamically inserted here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>電測截圖工具 © 2024 | 支援 GitHub Pages 部署</p>
+        </footer>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/pdf-handler.js"></script>
+    <script src="js/list-handler.js"></script>
+    <script src="js/image-handler.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
