@@ -637,9 +637,10 @@ const App = {
             this.renderPageStatusList();
         }
 
-        // 初始化該頁的區域調整設定
-        if (!this.state.regionAdjustments[this.state.currentPage]) {
-            this.state.regionAdjustments[this.state.currentPage] = {
+        // 初始化區域調整設定（統一模式使用固定 key 1）
+        const adjKey = this.state.selectionMode === 'uniform' ? 1 : this.state.currentPage;
+        if (!this.state.regionAdjustments[adjKey]) {
+            this.state.regionAdjustments[adjKey] = {
                 rotation: 0,
                 scale: 100
             };
@@ -656,7 +657,7 @@ const App = {
         this.elements.regionAdjustPanel.hidden = false;
 
         // 重置調整控制
-        const adj = this.state.regionAdjustments[this.state.currentPage];
+        const adj = this.state.regionAdjustments[adjKey];
         this.elements.cropRotationSlider.value = adj.rotation;
         this.elements.cropRotationDisplay.textContent = adj.rotation + '°';
         this.elements.cropScaleSlider.value = adj.scale;
@@ -712,7 +713,9 @@ const App = {
     renderCropPreview() {
         if (!this.state.currentCropCanvas) return;
 
-        const adj = this.state.regionAdjustments[this.state.currentPage] || { rotation: 0, scale: 100 };
+        // 統一模式使用固定 key (1)，否則使用當前頁碼
+        const adjKey = this.state.selectionMode === 'uniform' ? 1 : this.state.currentPage;
+        const adj = this.state.regionAdjustments[adjKey] || { rotation: 0, scale: 100 };
         const sourceCanvas = this.state.currentCropCanvas;
 
         // 預覽 canvas 保持固定比例（與目標尺寸相同比例）
@@ -767,19 +770,20 @@ const App = {
      * 更新區域調整設定
      */
     updateCropAdjustments(rotation, scale) {
-        const pageNum = this.state.currentPage;
+        // 統一模式使用固定 key (1)，否則使用當前頁碼
+        const adjKey = this.state.selectionMode === 'uniform' ? 1 : this.state.currentPage;
 
-        if (!this.state.regionAdjustments[pageNum]) {
-            this.state.regionAdjustments[pageNum] = { rotation: 0, scale: 100 };
+        if (!this.state.regionAdjustments[adjKey]) {
+            this.state.regionAdjustments[adjKey] = { rotation: 0, scale: 100 };
         }
 
         if (rotation !== null) {
-            this.state.regionAdjustments[pageNum].rotation = rotation;
+            this.state.regionAdjustments[adjKey].rotation = rotation;
             this.elements.cropRotationDisplay.textContent = rotation + '°';
         }
 
         if (scale !== null) {
-            this.state.regionAdjustments[pageNum].scale = scale;
+            this.state.regionAdjustments[adjKey].scale = scale;
             this.elements.cropScaleDisplay.textContent = scale + '%';
         }
 
@@ -968,8 +972,9 @@ const App = {
                     0, 0, cropWidth, cropHeight
                 );
 
-                // 取得該頁的區域調整設定
-                const adj = this.state.regionAdjustments[page] || { rotation: 0, scale: 100 };
+                // 取得區域調整設定（統一模式使用第一頁的設定，否則使用當前頁的設定）
+                const adjKey = this.state.selectionMode === 'uniform' ? 1 : page;
+                const adj = this.state.regionAdjustments[adjKey] || { rotation: 0, scale: 100 };
 
                 // 套用旋轉和縮放，直接輸出目標尺寸（固定框架，圖像在框內旋轉）
                 const finalCanvas = this.applyAdjustments(
