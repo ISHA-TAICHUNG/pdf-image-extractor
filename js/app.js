@@ -558,11 +558,8 @@ const App = {
             this.elements.selectionBox.style.top = (region.y * rect.height) + 'px';
             this.elements.selectionBox.style.width = (region.width * rect.width) + 'px';
             this.elements.selectionBox.style.height = (region.height * rect.height) + 'px';
-
-            this.elements.regionInfo.hidden = false;
         } else {
             this.elements.selectionBox.hidden = true;
-            this.elements.regionInfo.hidden = true;
         }
     },
 
