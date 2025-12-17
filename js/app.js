@@ -920,7 +920,7 @@ const App = {
 
         // 重置圖片名稱
         this.state.images.forEach((img, index) => {
-            img.name = `照片_${String(index + 1).padStart(3, '0')}`;
+            img.name = String(index + 1).padStart(3, '0');
         });
 
         this.renderImages();
@@ -988,9 +988,9 @@ const App = {
                 // 決定名稱
                 let name;
                 if (this.state.listLoaded && this.state.namingMode === 'sequential') {
-                    name = ListHandler.getNameByIndex(i) || `照片_${String(i + 1).padStart(3, '0')}`;
+                    name = ListHandler.getNameByIndex(i) || String(i + 1).padStart(3, '0');
                 } else {
-                    name = `照片_${String(i + 1).padStart(3, '0')}`;
+                    name = String(i + 1).padStart(3, '0');
                 }
 
                 // 驗證圖片
@@ -1159,7 +1159,7 @@ const App = {
                     img.name = name;
                     ListHandler.markAsUsed(name);
                 } else {
-                    img.name = `照片_${String(index + 1).padStart(3, '0')}`;
+                    img.name = String(index + 1).padStart(3, '0');
                 }
             });
         }
@@ -1353,7 +1353,7 @@ const App = {
             img.name = name;
             ListHandler.markAsUsed(name);
         } else {
-            img.name = `照片_${String(imageIndex + 1).padStart(3, '0')}`;
+            img.name = String(imageIndex + 1).padStart(3, '0');
         }
 
         this.renderNameList();
