@@ -1007,7 +1007,8 @@ const App = {
                     pageNum: page,
                     name: name,
                     validation: validation,
-                    rotation: 0 // 結果頁面的旋轉角度
+                    rotation: 0, // 結果頁面的旋轉角度
+                    scale: 100   // 結果頁面的縮放比例
                 });
             }
 
@@ -1033,23 +1034,22 @@ const App = {
     },
 
     /**
-     * 旋轉圖片（設定絕對角度，固定框架模式）
+     * 更新圖片變形（旋轉和縮放）
      */
-    setImageRotation(index, degrees) {
+    updateImageTransform(index) {
         const img = this.state.images[index];
-        // 角度範圍 -180 到 180
-        degrees = ((degrees + 180) % 360) - 180;
-        img.rotation = degrees;
+        const degrees = img.rotation || 0;
+        const scale = img.scale || 100;
 
-        // 建立旋轉後的 canvas（固定輸出尺寸）
+        // 建立旋轉縮放後的 canvas（固定輸出尺寸）
         const outputWidth = this.state.targetWidth;
         const outputHeight = this.state.targetHeight;
 
-        const rotatedCanvas = document.createElement('canvas');
-        rotatedCanvas.width = outputWidth;
-        rotatedCanvas.height = outputHeight;
+        const transformedCanvas = document.createElement('canvas');
+        transformedCanvas.width = outputWidth;
+        transformedCanvas.height = outputHeight;
 
-        const ctx = rotatedCanvas.getContext('2d');
+        const ctx = transformedCanvas.getContext('2d');
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
 
@@ -1059,6 +1059,7 @@ const App = {
 
         // 計算旋轉參數
         const radians = (degrees * Math.PI) / 180;
+        const scaleFactor = scale / 100;
 
         // 計算基礎縮放比例（讓原始圖像填滿輸出框）
         const baseScaleX = outputWidth / img.canvas.width;
@@ -1068,7 +1069,7 @@ const App = {
         // 移動到中心點，旋轉並縮放
         ctx.translate(outputWidth / 2, outputHeight / 2);
         ctx.rotate(radians);
-        ctx.scale(baseScale, baseScale);
+        ctx.scale(baseScale * scaleFactor, baseScale * scaleFactor);
 
         // 繪製圖像（圖像中心對齊框架中心）
         ctx.drawImage(
@@ -1081,17 +1082,45 @@ const App = {
         const card = this.elements.imagesGrid.children[index];
         if (card) {
             const imgElement = card.querySelector('.image-wrapper img');
-            imgElement.src = rotatedCanvas.toDataURL('image/jpeg', 0.9);
+            imgElement.src = transformedCanvas.toDataURL('image/jpeg', 0.9);
 
-            // 更新滑桿和輸入框的值
-            const slider = card.querySelector('.rotation-slider');
-            const input = card.querySelector('.rotation-value');
-            if (slider) slider.value = degrees;
-            if (input) input.value = degrees + '°';
+            // 更新旋轉滑桿和輸入框
+            const rotationSlider = card.querySelector('.rotation-slider');
+            const rotationInput = card.querySelector('.rotation-value');
+            if (rotationSlider) rotationSlider.value = degrees;
+            if (rotationInput) rotationInput.value = degrees + '°';
+
+            // 更新縮放滑桿和數值
+            const scaleSlider = card.querySelector('.scale-slider');
+            const scaleValue = card.querySelector('.scale-value');
+            if (scaleSlider) scaleSlider.value = scale;
+            if (scaleValue) scaleValue.textContent = scale + '%';
         }
 
-        // 儲存旋轉後的 canvas 供下載使用
-        img.rotatedCanvas = rotatedCanvas;
+        // 儲存變形後的 canvas 供下載使用
+        img.rotatedCanvas = transformedCanvas;
+    },
+
+    /**
+     * 設定圖片縮放
+     */
+    setImageScale(index, scale) {
+        const img = this.state.images[index];
+        // 限制縮放範圍 50% 到 200%
+        scale = Math.max(50, Math.min(200, parseInt(scale)));
+        img.scale = scale;
+        this.updateImageTransform(index);
+    },
+
+    /**
+     * 旋轉圖片（設定絕對角度，固定框架模式）
+     */
+    setImageRotation(index, degrees) {
+        const img = this.state.images[index];
+        // 角度範圍 -180 到 180
+        degrees = ((degrees + 180) % 360) - 180;
+        img.rotation = degrees;
+        this.updateImageTransform(index);
     },
 
     /**
@@ -1184,7 +1213,14 @@ const App = {
                         <input type="range" class="rotation-slider" min="-180" max="180" value="${img.rotation}" title="拖曳調整角度">
                         <input type="text" class="rotation-value" value="${img.rotation}°" title="輸入角度">
                     </div>
-                    <div class="rotation-buttons">
+                    
+                    <div class="rotation-slider-row" style="margin-top: 8px;">
+                         <span style="font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; margin-right: 4px;">縮放</span>
+                         <input type="range" class="scale-slider" min="50" max="200" value="${img.scale || 100}" step="5" title="拖曳調整縮放" style="flex: 1; height: 4px; accent-color: var(--primary); cursor: pointer;">
+                         <span class="scale-value" style="font-size: 0.75rem; color: var(--text-primary); width: 35px; text-align: right;">${img.scale || 100}%</span>
+                    </div>
+
+                    <div class="rotation-buttons" style="margin-top: 8px;">
                         <button class="rotate-btn" data-rotate="0" title="重置角度">⟳ 重置</button>
                     </div>
                 </div>
@@ -1214,6 +1250,14 @@ const App = {
 
             rotationInput.addEventListener('focus', (e) => {
                 e.target.select();
+            });
+
+            // 縮放滑桿事件
+            const scaleSlider = card.querySelector('.scale-slider');
+            scaleSlider.addEventListener('input', (e) => {
+                const scale = parseInt(e.target.value);
+                this.setImageScale(index, scale);
+                card.querySelector('.scale-value').textContent = scale + '%';
             });
 
             // 旋轉按鈕事件
