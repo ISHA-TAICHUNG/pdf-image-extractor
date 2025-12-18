@@ -1160,3 +1160,30 @@ body::before {
         margin-top: var(--spacing-sm);
     }
 }
+
+/* Custom Name Input */
+.image-name-input {
+    margin-top: var(--spacing-sm);
+}
+
+.custom-name-input {
+    width: 100%;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-family: inherit;
+    transition: all var(--transition-fast);
+}
+
+.custom-name-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-glow);
+}
+
+.custom-name-input::placeholder {
+    color: var(--text-muted);
+}

@@ -1139,8 +1139,11 @@ const App = {
             this.elements.nameListSection.hidden = true;
         }
 
-        if (this.state.listLoaded && this.state.images.length > 0) {
-            ListHandler.usedNames.clear();
+        // 切換模式時重新渲染圖片
+        if (this.state.images.length > 0) {
+            if (this.state.listLoaded) {
+                ListHandler.usedNames.clear();
+            }
             this.updateImageNames();
         }
     },
@@ -1307,6 +1310,37 @@ const App = {
 
                 nameSelect.appendChild(select);
                 card.querySelector('.image-info').appendChild(nameSelect);
+            }
+
+            // 如果是自訂輸入模式，添加輸入框
+            if (this.state.namingMode === 'custom') {
+                const nameInputDiv = document.createElement('div');
+                nameInputDiv.className = 'image-name-input';
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = '輸入自訂名稱';
+                input.value = img.customName || '';
+                input.className = 'custom-name-input';
+
+                input.addEventListener('change', (e) => {
+                    img.customName = e.target.value.trim();
+                    if (img.customName) {
+                        img.name = img.customName;
+                    } else {
+                        img.name = String(index + 1).padStart(3, '0');
+                    }
+                    // 更新顯示的名稱
+                    card.querySelector('.image-name').textContent = img.name;
+                    card.querySelector('.image-name').title = img.name;
+                });
+
+                input.addEventListener('focus', (e) => {
+                    e.target.select();
+                });
+
+                nameInputDiv.appendChild(input);
+                card.querySelector('.image-info').appendChild(nameInputDiv);
             }
 
             this.elements.imagesGrid.appendChild(card);
