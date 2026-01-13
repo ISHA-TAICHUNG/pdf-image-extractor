@@ -26,6 +26,7 @@ const App = {
         namingMode: 'sequential',
         outputFormat: 'jpeg',
         jpegQuality: 0.92,
+        dpi: 300,
         // 目標尺寸
         targetWidth: 413,
         targetHeight: 531,
@@ -104,6 +105,7 @@ const App = {
             namingMode: document.getElementById('naming-mode'),
             jpegQuality: document.getElementById('jpeg-quality'),
             qualityValue: document.getElementById('quality-value'),
+            outputDpi: document.getElementById('output-dpi'),
             progressCard: document.getElementById('progress-card'),
             progressTitle: document.getElementById('progress-title'),
             progressFill: document.getElementById('progress-fill'),
@@ -271,6 +273,10 @@ const App = {
         this.elements.jpegQuality.addEventListener('input', (e) => {
             this.state.jpegQuality = parseFloat(e.target.value);
             this.elements.qualityValue.textContent = Math.round(this.state.jpegQuality * 100) + '%';
+        });
+
+        this.elements.outputDpi.addEventListener('change', (e) => {
+            this.state.dpi = parseInt(e.target.value);
         });
 
         // 擷取按鈕
@@ -1476,7 +1482,8 @@ const App = {
                     selectedImages[0].canvas,
                     selectedImages[0].name,
                     this.state.outputFormat,
-                    this.state.jpegQuality
+                    this.state.jpegQuality,
+                    this.state.dpi
                 );
             } else {
                 this.elements.progressCard.hidden = false;
@@ -1490,7 +1497,8 @@ const App = {
                         const progress = (current / total) * 100;
                         this.elements.progressFill.style.width = progress + '%';
                         this.elements.progressText.textContent = `正在處理 ${current}/${total} 張圖片...`;
-                    }
+                    },
+                    this.state.dpi
                 );
 
                 this.elements.progressCard.hidden = true;

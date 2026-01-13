@@ -375,10 +375,11 @@ const ImageHandler = {
      * @param {HTMLCanvasElement} canvas 
      * @param {string} filename 
      * @param {string} format 
-     * @param {number} quality 
+     * @param {number} quality
+     * @param {number} dpi
      */
-    async downloadImage(canvas, filename, format = 'jpeg', quality = 0.92) {
-        const blob = await this.compressToSize(canvas, format, this.specs.maxSize, this.specs.dpi);
+    async downloadImage(canvas, filename, format = 'jpeg', quality = 0.92, dpi = 300) {
+        const blob = await this.compressToSize(canvas, format, this.specs.maxSize, dpi);
         const extension = format === 'png' ? 'png' : 'jpg';
         saveAs(blob, `${filename}.${extension}`);
     },
@@ -389,15 +390,16 @@ const ImageHandler = {
      * @param {string} format 
      * @param {number} quality 
      * @param {Function} onProgress 
+     * @param {number} dpi
      * @returns {Promise<void>}
      */
-    async downloadAsZip(images, format = 'jpeg', quality = 0.92, onProgress) {
+    async downloadAsZip(images, format = 'jpeg', quality = 0.92, onProgress, dpi = 300) {
         const zip = new JSZip();
         const extension = format === 'png' ? 'png' : 'jpg';
 
         for (let i = 0; i < images.length; i++) {
             const { canvas, name } = images[i];
-            const blob = await this.compressToSize(canvas, format, this.specs.maxSize, this.specs.dpi);
+            const blob = await this.compressToSize(canvas, format, this.specs.maxSize, dpi);
             zip.file(`${name}.${extension}`, blob);
 
             if (onProgress) {
