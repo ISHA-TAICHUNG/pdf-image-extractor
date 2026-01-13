@@ -25,7 +25,7 @@ const App = {
         // 設定
         namingMode: 'sequential',
         outputFormat: 'jpeg',
-        jpegQuality: 0.92,
+        jpegQuality: 1.0,
         dpi: 300,
         // 目標尺寸
         targetWidth: 413,
@@ -103,8 +103,6 @@ const App = {
             stepSettings: document.getElementById('step-settings'),
             outputFormat: document.getElementById('output-format'),
             namingMode: document.getElementById('naming-mode'),
-            jpegQuality: document.getElementById('jpeg-quality'),
-            qualityValue: document.getElementById('quality-value'),
             outputDpi: document.getElementById('output-dpi'),
             progressCard: document.getElementById('progress-card'),
             progressTitle: document.getElementById('progress-title'),
@@ -268,11 +266,6 @@ const App = {
         this.elements.namingMode.addEventListener('change', (e) => {
             this.state.namingMode = e.target.value;
             this.updateNamingMode();
-        });
-
-        this.elements.jpegQuality.addEventListener('input', (e) => {
-            this.state.jpegQuality = parseFloat(e.target.value);
-            this.elements.qualityValue.textContent = Math.round(this.state.jpegQuality * 100) + '%';
         });
 
         this.elements.outputDpi.addEventListener('change', (e) => {
