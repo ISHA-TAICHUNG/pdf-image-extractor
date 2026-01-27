@@ -23,6 +23,7 @@ const ListHandler = {
                 case 'csv':
                     this.names = await this.parseCSV(file);
                     break;
+                case 'xls':
                 case 'xlsx':
                 case 'xlsm':
                     this.names = await this.parseExcel(file);
