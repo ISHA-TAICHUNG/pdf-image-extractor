@@ -851,7 +851,7 @@ const App = {
      * 處理清單上傳
      */
     async handleListUpload(file) {
-        const validExtensions = ['.csv', '.txt', '.xlsx', '.xlsm'];
+        const validExtensions = ['.csv', '.txt', '.xls', '.xlsx', '.xlsm'];
         const fileExt = '.' + file.name.split('.').pop().toLowerCase();
 
         if (!validExtensions.includes(fileExt)) {
