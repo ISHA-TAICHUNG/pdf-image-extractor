@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LearnPlay - Fun Learning for Everyone</title>
+  <meta name="description" content="Discover a playful way to learn with engaging courses, progress tracking, and a supportive community.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            heading: ['Fredoka', 'sans-serif'],
+            body: ['Nunito', 'sans-serif'],
+          },
+          colors: {
+            peach: '#FDBCB4',
+            baby: '#ADD8E6',
+            mint: '#98FF98',
+            lilac: '#E6E6FA',
+            coral: '#FF6B6B',
+            sunny: '#FFD93D',
+            sky: '#6BCB77',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Fredoka', sans-serif;
+    }
+    
+    /* Claymorphism card effect */
+    .clay-card {
+      background: linear-gradient(145deg, #ffffff, #f0f0f0);
+      border-radius: 24px;
+      border: 3px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 
+        8px 8px 16px rgba(0, 0, 0, 0.1),
+        -4px -4px 12px rgba(255, 255, 255, 0.9),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.8);
+      transition: all 0.3s ease;
+    }
+    
+    .clay-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 
+        12px 12px 24px rgba(0, 0, 0, 0.12),
+        -6px -6px 16px rgba(255, 255, 255, 0.95),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.8);
+    }
+    
+    .clay-button {
+      border-radius: 16px;
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 
+        4px 4px 8px rgba(0, 0, 0, 0.15),
+        -2px -2px 6px rgba(255, 255, 255, 0.8),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.6);
+      transition: all 0.2s ease-out;
+    }
+    
+    .clay-button:hover {
+      transform: scale(1.02);
+      box-shadow: 
+        6px 6px 12px rgba(0, 0, 0, 0.18),
+        -3px -3px 8px rgba(255, 255, 255, 0.9),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.6);
+    }
+    
+    .clay-button:active {
+      transform: scale(0.98);
+      box-shadow: 
+        2px 2px 4px rgba(0, 0, 0, 0.1),
+        -1px -1px 3px rgba(255, 255, 255, 0.7),
+        inset 2px 2px 4px rgba(0, 0, 0, 0.08);
+    }
+    
+    .progress-bar {
+      background: linear-gradient(90deg, #98FF98 0%, #6BCB77 50%, #4CAF50 100%);
+      border-radius: 999px;
+      box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4);
+    }
+    
+    .blob {
+      border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+      animation: blob-morph 8s ease-in-out infinite;
+    }
+    
+    @keyframes blob-morph {
+      0%, 100% { border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; }
+      25% { border-radius: 58% 42% 30% 70% / 55% 55% 45% 45%; }
+      50% { border-radius: 70% 30% 42% 58% / 45% 55% 55% 45%; }
+      75% { border-radius: 30% 70% 58% 42% / 55% 45% 45% 55%; }
+    }
+    
+    .float {
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    .float-delay {
+      animation: float 6s ease-in-out 2s infinite;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-lilac/30 via-white to-baby/30 min-h-screen">
+  
+  <!-- Floating Decorative Blobs -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+    <div class="blob absolute top-20 left-10 w-64 h-64 bg-peach/40 float"></div>
+    <div class="blob absolute top-40 right-20 w-48 h-48 bg-baby/50 float-delay"></div>
+    <div class="blob absolute bottom-32 left-1/4 w-56 h-56 bg-mint/40 float"></div>
+    <div class="blob absolute bottom-20 right-10 w-40 h-40 bg-lilac/50 float-delay"></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="fixed top-4 left-4 right-4 z-50">
+    <div class="clay-card backdrop-blur-sm bg-white/80 px-6 py-4 flex items-center justify-between max-w-6xl mx-auto">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-gradient-to-br from-coral to-sunny rounded-2xl flex items-center justify-center shadow-lg">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+          </svg>
+        </div>
+        <span class="font-heading text-2xl font-bold text-gray-800">LearnPlay</span>
+      </div>
+      
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#courses" class="font-semibold text-gray-600 hover:text-coral transition-colors cursor-pointer">Courses</a>
+        <a href="#progress" class="font-semibold text-gray-600 hover:text-coral transition-colors cursor-pointer">Progress</a>
+        <a href="#testimonials" class="font-semibold text-gray-600 hover:text-coral transition-colors cursor-pointer">Students</a>
+        <button class="clay-button bg-gradient-to-r from-coral to-sunny text-white font-bold px-6 py-3 cursor-pointer">
+          Start Free
+        </button>
+      </div>
+      
+      <button class="md:hidden clay-button bg-white p-3 cursor-pointer">
+        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="relative pt-32 pb-20 px-4 overflow-hidden">
+    <div class="max-w-6xl mx-auto">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div class="relative z-10">
+          <div class="inline-block clay-card bg-mint/60 px-4 py-2 mb-6">
+            <span class="font-semibold text-gray-700">🎉 Join 50,000+ Happy Learners</span>
+          </div>
+          
+          <h1 class="font-heading text-5xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight">
+            Learning Should Be 
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-coral via-sunny to-sky">Fun & Playful!</span>
+          </h1>
+          
+          <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+            Discover courses that make learning feel like play. Track your progress, earn rewards, and join a community of curious minds.
+          </p>
+          
+          <div class="flex flex-wrap gap-4">
+            <button class="clay-button bg-gradient-to-r from-coral to-sunny text-white font-bold px-8 py-4 text-lg cursor-pointer">
+              Start Learning Free
+            </button>
+            <button class="clay-button bg-white text-gray-700 font-bold px-8 py-4 text-lg cursor-pointer flex items-center gap-2">
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+              Watch Demo
+            </button>
+          </div>
+          
+          <div class="flex items-center gap-6 mt-10">
+            <div class="flex -space-x-3">
+              <div class="w-12 h-12 rounded-full bg-peach border-3 border-white shadow-lg flex items-center justify-center text-xl">👨‍🎓</div>
+              <div class="w-12 h-12 rounded-full bg-baby border-3 border-white shadow-lg flex items-center justify-center text-xl">👩‍🎓</div>
+              <div class="w-12 h-12 rounded-full bg-mint border-3 border-white shadow-lg flex items-center justify-center text-xl">🧑‍🎓</div>
+              <div class="w-12 h-12 rounded-full bg-lilac border-3 border-white shadow-lg flex items-center justify-center text-xl">👨‍💻</div>
+            </div>
+            <div>
+              <div class="flex items-center gap-1 text-sunny text-lg">★★★★★</div>
+              <p class="text-gray-600 font-medium">4.9/5 from 12,000+ reviews</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="relative">
+          <div class="clay-card p-8 bg-white/90">
+            <div class="aspect-video bg-gradient-to-br from-baby/50 to-lilac/50 rounded-2xl flex items-center justify-center mb-6">
+              <div class="clay-button bg-white/90 w-20 h-20 rounded-full flex items-center justify-center cursor-pointer">
+                <svg class="w-10 h-10 text-coral ml-1" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="font-heading text-xl font-bold text-gray-800">Intro to Web Design</h3>
+                <p class="text-gray-500">12 lessons • 2.5 hours</p>
+              </div>
+              <div class="clay-card bg-mint/60 px-3 py-1">
+                <span class="font-bold text-gray-700">FREE</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Floating achievement badge -->
+          <div class="absolute -top-4 -right-4 clay-card bg-white p-4 float">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-gradient-to-br from-sunny to-coral rounded-xl flex items-center justify-center text-2xl">
+                🏆
+              </div>
+              <div>
+                <p class="font-bold text-gray-800">Achievement!</p>
+                <p class="text-sm text-gray-500">First Course Done</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Course Catalog Section -->
+  <section id="courses" class="py-20 px-4 relative z-10">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16">
+        <div class="inline-block clay-card bg-baby/60 px-4 py-2 mb-4">
+          <span class="font-semibold text-gray-700">📚 Popular Courses</span>
+        </div>
+        <h2 class="font-heading text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
+          Explore Our Course Catalog
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          From coding to creativity, find the perfect course for your learning journey.
+        </p>
+      </div>
+      
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Course Card 1 -->
+        <div class="clay-card p-6 bg-white/90 cursor-pointer group">
+          <div class="aspect-video bg-gradient-to-br from-coral/30 to-sunny/30 rounded-2xl mb-4 flex items-center justify-center overflow-hidden">
+            <div class="text-6xl group-hover:scale-110 transition-transform">🎨</div>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="clay-card bg-peach/60 px-2 py-1 text-sm font-medium">Design</span>
+            <span class="clay-card bg-mint/60 px-2 py-1 text-sm font-medium">Beginner</span>
+          </div>
+          <h3 class="font-heading text-xl font-bold text-gray-800 mb-2">UI/UX Design Basics</h3>
+          <p class="text-gray-600 mb-4">Learn the fundamentals of creating beautiful and functional interfaces.</p>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 bg-lilac rounded-full flex items-center justify-center text-sm">👩‍🏫</div>
+              <span class="text-gray-600 font-medium">Sarah Chen</span>
+            </div>
+            <span class="font-heading font-bold text-coral text-xl">$29</span>
+          </div>
+        </div>
+        
+        <!-- Course Card 2 -->
+        <div class="clay-card p-6 bg-white/90 cursor-pointer group">
+          <div class="aspect-video bg-gradient-to-br from-baby/40 to-mint/40 rounded-2xl mb-4 flex items-center justify-center overflow-hidden">
+            <div class="text-6xl group-hover:scale-110 transition-transform">💻</div>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="clay-card bg-baby/60 px-2 py-1 text-sm font-medium">Coding</span>
+            <span class="clay-card bg-lilac/60 px-2 py-1 text-sm font-medium">Intermediate</span>
+          </div>
+          <h3 class="font-heading text-xl font-bold text-gray-800 mb-2">JavaScript Mastery</h3>
+          <p class="text-gray-600 mb-4">Master JavaScript with hands-on projects and real-world examples.</p>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 bg-mint rounded-full flex items-center justify-center text-sm">👨‍💻</div>
+              <span class="text-gray-600 font-medium">Alex Rivera</span>
+            </div>
+            <span class="font-heading font-bold text-coral text-xl">$49</span>
+          </div>
+        </div>
+        
+        <!-- Course Card 3 -->
+        <div class="clay-card p-6 bg-white/90 cursor-pointer group">
+          <div class="aspect-video bg-gradient-to-br from-lilac/40 to-peach/40 rounded-2xl mb-4 flex items-center justify-center overflow-hidden">
+            <div class="text-6xl group-hover:scale-110 transition-transform">📱</div>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="clay-card bg-sunny/60 px-2 py-1 text-sm font-medium">Mobile</span>
+            <span class="clay-card bg-coral/30 px-2 py-1 text-sm font-medium">Advanced</span>
+          </div>
+          <h3 class="font-heading text-xl font-bold text-gray-800 mb-2">React Native Apps</h3>
+          <p class="text-gray-600 mb-4">Build cross-platform mobile apps with React Native from scratch.</p>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 bg-peach rounded-full flex items-center justify-center text-sm">👩‍💻</div>
+              <span class="text-gray-600 font-medium">Maya Patel</span>
+            </div>
+            <span class="font-heading font-bold text-coral text-xl">$79</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="text-center mt-12">
+        <button class="clay-button bg-white text-gray-700 font-bold px-8 py-4 text-lg cursor-pointer">
+          View All 100+ Courses →
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Progress Tracking Demo Section -->
+  <section id="progress" class="py-20 px-4 relative z-10">
+    <div class="max-w-6xl mx-auto">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <div class="inline-block clay-card bg-mint/60 px-4 py-2 mb-4">
+            <span class="font-semibold text-gray-700">📊 Progress Tracking</span>
+          </div>
+          <h2 class="font-heading text-4xl lg:text-5xl font-bold text-gray-800 mb-6">
+            Watch Yourself <span class="text-sky">Grow</span>
+          </h2>
+          <p class="text-xl text-gray-600 mb-8">
+            Track your learning journey with visual progress bars, achievement badges, and learning streaks. Stay motivated and see how far you've come!
+          </p>
+          
+          <div class="space-y-4">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 clay-card bg-mint/60 flex items-center justify-center text-2xl">🔥</div>
+              <div>
+                <h4 class="font-bold text-gray-800">Daily Streaks</h4>
+                <p class="text-gray-600">Build habits with streak tracking</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 clay-card bg-sunny/60 flex items-center justify-center text-2xl">🏅</div>
+              <div>
+                <h4 class="font-bold text-gray-800">Achievement Badges</h4>
+                <p class="text-gray-600">Earn rewards for completing milestones</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 clay-card bg-baby/60 flex items-center justify-center text-2xl">📈</div>
+              <div>
+                <h4 class="font-bold text-gray-800">Learning Analytics</h4>
+                <p class="text-gray-600">Insights into your study patterns</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="clay-card p-8 bg-white/90">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="font-heading text-2xl font-bold text-gray-800">Your Dashboard</h3>
+            <div class="clay-card bg-coral/20 px-3 py-1">
+              <span class="font-bold text-coral">🔥 15 Day Streak!</span>
+            </div>
+          </div>
+          
+          <!-- Progress Stats -->
+          <div class="grid grid-cols-3 gap-4 mb-8">
+            <div class="clay-card bg-baby/40 p-4 text-center">
+              <div class="font-heading text-3xl font-bold text-gray-800">12</div>
+              <div class="text-sm text-gray-600">Courses</div>
+            </div>
+            <div class="clay-card bg-mint/40 p-4 text-center">
+              <div class="font-heading text-3xl font-bold text-gray-800">47</div>
+              <div class="text-sm text-gray-600">Hours</div>
+            </div>
+            <div class="clay-card bg-sunny/40 p-4 text-center">
+              <div class="font-heading text-3xl font-bold text-gray-800">8</div>
+              <div class="text-sm text-gray-600">Badges</div>
+            </div>
+          </div>
+          
+          <!-- Course Progress -->
+          <div class="space-y-4">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-medium text-gray-700">JavaScript Mastery</span>
+                <span class="font-bold text-sky">78%</span>
+              </div>
+              <div class="h-4 bg-gray-100 rounded-full overflow-hidden">
+                <div class="progress-bar h-full" style="width: 78%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-medium text-gray-700">UI/UX Design</span>
+                <span class="font-bold text-sky">45%</span>
+              </div>
+              <div class="h-4 bg-gray-100 rounded-full overflow-hidden">
+                <div class="progress-bar h-full" style="width: 45%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-medium text-gray-700">React Native</span>
+                <span class="font-bold text-sky">20%</span>
+              </div>
+              <div class="h-4 bg-gray-100 rounded-full overflow-hidden">
+                <div class="progress-bar h-full" style="width: 20%"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Badges -->
+          <div class="mt-8">
+            <h4 class="font-bold text-gray-800 mb-4">Recent Badges</h4>
+            <div class="flex gap-3">
+              <div class="w-14 h-14 clay-card bg-sunny/60 flex items-center justify-center text-2xl" title="First Course">🌟</div>
+              <div class="w-14 h-14 clay-card bg-coral/40 flex items-center justify-center text-2xl" title="Week Streak">🔥</div>
+              <div class="w-14 h-14 clay-card bg-baby/60 flex items-center justify-center text-2xl" title="Quiz Master">🧠</div>
+              <div class="w-14 h-14 clay-card bg-mint/60 flex items-center justify-center text-2xl" title="Coding Pro">💻</div>
+              <div class="w-14 h-14 clay-card bg-lilac/60 flex items-center justify-center text-2xl" title="Night Owl">🦉</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section id="testimonials" class="py-20 px-4 relative z-10">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16">
+        <div class="inline-block clay-card bg-peach/60 px-4 py-2 mb-4">
+          <span class="font-semibold text-gray-700">💬 Student Stories</span>
+        </div>
+        <h2 class="font-heading text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
+          Loved by Learners Worldwide
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          See what our students have to say about their learning journey.
+        </p>
+      </div>
+      
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Testimonial 1 -->
+        <div class="clay-card p-6 bg-white/90">
+          <div class="flex items-center gap-1 text-sunny text-lg mb-4">★★★★★</div>
+          <p class="text-gray-700 mb-6 leading-relaxed">
+            "LearnPlay made coding feel like a game! The progress tracking kept me motivated, and I landed my first dev job in 6 months. 🎉"
+          </p>
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 clay-card bg-baby/60 flex items-center justify-center text-3xl">👨‍💻</div>
+            <div>
+              <h4 class="font-bold text-gray-800">Marcus Johnson</h4>
+              <p class="text-gray-500">Frontend Developer @ Spotify</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Testimonial 2 -->
+        <div class="clay-card p-6 bg-white/90">
+          <div class="flex items-center gap-1 text-sunny text-lg mb-4">★★★★★</div>
+          <p class="text-gray-700 mb-6 leading-relaxed">
+            "As a teacher, I recommend LearnPlay to all my students. The playful interface makes learning enjoyable for everyone!"
+          </p>
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 clay-card bg-mint/60 flex items-center justify-center text-3xl">👩‍🏫</div>
+            <div>
+              <h4 class="font-bold text-gray-800">Dr. Emily Wong</h4>
+              <p class="text-gray-500">CS Professor @ MIT</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Testimonial 3 -->
+        <div class="clay-card p-6 bg-white/90">
+          <div class="flex items-center gap-1 text-sunny text-lg mb-4">★★★★★</div>
+          <p class="text-gray-700 mb-6 leading-relaxed">
+            "The achievement system is genius! My kids are actually excited to learn. They've completed 20 courses this year! 🏆"
+          </p>
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 clay-card bg-peach/60 flex items-center justify-center text-3xl">👨‍👧‍👦</div>
+            <div>
+              <h4 class="font-bold text-gray-800">David Park</h4>
+              <p class="text-gray-500">Parent of 3 learners</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-20 px-4 relative z-10">
+    <div class="max-w-4xl mx-auto">
+      <div class="clay-card bg-gradient-to-br from-coral/90 to-sunny/90 p-12 text-center">
+        <h2 class="font-heading text-4xl lg:text-5xl font-bold text-white mb-6">
+          Ready to Start Learning?
+        </h2>
+        <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+          Join 50,000+ learners today and unlock your potential with fun, engaging courses. Your first course is on us!
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <button class="clay-button bg-white text-coral font-bold px-8 py-4 text-lg cursor-pointer">
+            Start Free Trial 🚀
+          </button>
+          <button class="clay-button bg-transparent border-3 border-white text-white font-bold px-8 py-4 text-lg cursor-pointer">
+            View Pricing
+          </button>
+        </div>
+        
+        <p class="text-white/80 mt-6 text-sm">
+          No credit card required • Cancel anytime • 7-day free trial
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-12 px-4 border-t border-gray-200 relative z-10 bg-white/50">
+    <div class="max-w-6xl mx-auto">
+      <div class="grid md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-gradient-to-br from-coral to-sunny rounded-xl flex items-center justify-center shadow-lg">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+            </div>
+            <span class="font-heading text-xl font-bold text-gray-800">LearnPlay</span>
+          </div>
+          <p class="text-gray-600">Making learning fun and accessible for everyone.</p>
+        </div>
+        
+        <div>
+          <h4 class="font-bold text-gray-800 mb-4">Courses</h4>
+          <ul class="space-y-2 text-gray-600">
+            <li><a href="#" class="hover:text-coral cursor-pointer">Web Development</a></li>
+            <li><a href="#" class="hover:text-coral cursor-pointer">Mobile Apps</a></li>
+            <li><a href="#" class="hover:text-coral cursor-pointer">Design</a></li>
+            <li><a href="#" class="hover:text-coral cursor-pointer">Data Science</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="font-bold text-gray-800 mb-4">Company</h4>
+          <ul class="space-y-2 text-gray-600">
+            <li><a href="#" class="hover:text-coral cursor-pointer">About Us</a></li>
+            <li><a href="#" class="hover:text-coral cursor-pointer">Careers</a></li>
+            <li><a href="#" class="hover:text-coral cursor-pointer">Blog</a></li>
+            <li><a href="#" class="hover:text-coral cursor-pointer">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="font-bold text-gray-800 mb-4">Legal</h4>
+          <ul class="space-y-2 text-gray-600">
+            <li><a href="#" class="hover:text-coral cursor-pointer">Privacy Policy</a></li>
+            <li><a href="#" class="hover:text-coral cursor-pointer">Terms of Service</a></li>
+            <li><a href="#" class="hover:text-coral cursor-pointer">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-200 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-gray-600">© 2026 LearnPlay. All rights reserved.</p>
+        <div class="flex gap-4">
+          <a href="#" class="w-10 h-10 clay-card bg-white flex items-center justify-center cursor-pointer hover:bg-baby/30 transition-colors">
+            <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+          </a>
+          <a href="#" class="w-10 h-10 clay-card bg-white flex items-center justify-center cursor-pointer hover:bg-baby/30 transition-colors">
+            <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          </a>
+          <a href="#" class="w-10 h-10 clay-card bg-white flex items-center justify-center cursor-pointer hover:bg-baby/30 transition-colors">
+            <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
