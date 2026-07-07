@@ -54,6 +54,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#F0EFE9;color:#1C1C1
 .adj-box{padding:12px; text-align:center; font-size:12px}
 .btn-group{display:flex; gap:5px; justify-content:center; margin:8px 0}
 .rbtn{background:#3A3A4E; border:1px solid #555; color:#fff; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:11px}
+.control-row{display:flex; align-items:center; gap:8px; margin-top:8px}
+.control-label{width:38px; color:#d8d8e6; text-align:left; white-space:nowrap}
+.control-row input[type="range"]{flex:1; accent-color:#0F6E56; cursor:pointer}
+.control-value{width:46px; color:#fff; text-align:right; font-variant-numeric:tabular-nums}
 .name-input{width:100%; background:#1e1e2e; border:1px solid #555; color:#fff; padding:6px; border-radius:4px; margin-top:8px; font-size:11px}
 .btn-go{padding:12px 24px; border-radius:8px; border:none; font-weight:600; cursor:pointer}
 .btn-go.green{background:#0F6E56; color:#fff}
@@ -310,7 +314,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#F0EFE9;color:#1C1C1
     if(rw<10||rh<10) return;
     let tempCanvas = document.createElement('canvas'); tempCanvas.width = rw; tempCanvas.height = rh;
     tempCanvas.getContext('2d').drawImage(pdfCanvas, Math.min(startX, p.x), Math.min(startY, p.y), rw, rh, 0, 0, rw, rh);
-    regions.push({ page:currPageNum, cx: Math.min(startX, p.x)+rw/2, cy: Math.min(startY, p.y)+rh/2, w:rw, h:rh, angle:0, thumb: tempCanvas.toDataURL('image/jpeg', 0.5) });
+    regions.push({ page:currPageNum, cx: Math.min(startX, p.x)+rw/2, cy: Math.min(startY, p.y)+rh/2, w:rw, h:rh, angle:0, scale:100, thumb: tempCanvas.toDataURL('image/jpeg', 0.5) });
     updateUI();
   };
 
@@ -389,11 +393,14 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#F0EFE9;color:#1C1C1
 
   function renderSingleImage(idx, pg, ratio){
     let r = regions[idx], pdfCX = r.cx * ratio, pdfCY = r.cy * ratio, origW = r.w * ratio, origH = r.h * ratio;
+    let scale = Math.max(50, Math.min(200, parseInt(r.scale || 100)));
+    r.scale = scale;
+    let drawW = TARGET_W * (scale / 100), drawH = TARGET_H * (scale / 100);
 
     let final = document.createElement('canvas'); final.width = TARGET_W; final.height = TARGET_H;
     let fCtx = final.getContext('2d'); fCtx.fillStyle = "#FFFFFF"; fCtx.fillRect(0, 0, TARGET_W, TARGET_H);
     fCtx.save(); fCtx.translate(TARGET_W / 2, TARGET_H / 2); fCtx.rotate(r.angle * Math.PI / 180);
-    fCtx.drawImage(pdfCache[pg], pdfCX - origW/2, pdfCY - origH/2, origW, origH, -TARGET_W/2, -TARGET_H/2, TARGET_W, TARGET_H);
+    fCtx.drawImage(pdfCache[pg], pdfCX - origW/2, pdfCY - origH/2, origW, origH, -drawW/2, -drawH/2, drawW, drawH);
     fCtx.restore();
 
     let previousImage = finalImages[idx];
@@ -411,6 +418,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#F0EFE9;color:#1C1C1
           <div style="display:flex; justify-content:space-between; margin-bottom:5px"><b>#${i+1}</b><span id="degLabel_${i}">旋轉: ${regions[i].angle}°</span></div>
           <div class="btn-group"><button class="rbtn" onclick="updateRot(${i},-1)">-1°</button><button class="rbtn" onclick="updateRot(${i},1)">+1°</button></div>
           <input type="range" min="-15" max="15" value="${regions[i].angle}" oninput="updateRot(${i}, parseInt(this.value), false, true)" style="width:100%">
+          <div class="control-row">
+            <span class="control-label">縮放</span>
+            <input type="range" min="50" max="200" step="5" value="${regions[i].scale || 100}" oninput="updateScale(${i}, parseInt(this.value))">
+            <span class="control-value" id="scaleLabel_${i}">${regions[i].scale || 100}%</span>
+          </div>
+          <div class="btn-group"><button class="rbtn" onclick="updateScale(${i},100)">重置縮放</button></div>
           <input type="text" class="name-input" value="${escapeHtml(img.name)}" oninput="syncName(${i}, this.value)" placeholder="請輸入檔名">
         </div>`;
       g.appendChild(d);
@@ -429,6 +442,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#F0EFE9;color:#1C1C1
     renderSingleImage(idx, regions[idx].page, ratio);
     document.getElementById(`prevImg_${idx}`).src = finalImages[idx].canvas.toDataURL('image/jpeg', 0.8);
     document.getElementById(`degLabel_${idx}`).textContent = `旋轉: ${regions[idx].angle}°`;
+  };
+
+  window.updateScale = (idx, scale) => {
+    regions[idx].scale = Math.max(50, Math.min(200, parseInt(scale) || 100));
+    const ratio = isImageMode ? (pdfCache[regions[idx].page].width / pdfCanvas.width) : (6.0 / 1.5);
+    renderSingleImage(idx, regions[idx].page, ratio);
+    const preview = document.getElementById(`prevImg_${idx}`);
+    const label = document.getElementById(`scaleLabel_${idx}`);
+    if (preview) preview.src = finalImages[idx].canvas.toDataURL('image/jpeg', 0.8);
+    if (label) label.textContent = `${regions[idx].scale}%`;
   };
 
   function getDpiJpeg(canvas, dpi) {
