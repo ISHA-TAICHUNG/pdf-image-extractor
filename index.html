@@ -24,28 +24,24 @@
 html,body{min-height:100%}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);overflow-y:auto}
 button,input{font:inherit}
-.hdr{height:72px;background:rgba(255,255,255,0.94);border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto minmax(420px,1fr) auto;align-items:center;gap:18px;padding:12px 18px;position:sticky;top:0;z-index:100;backdrop-filter:blur(14px)}
+.hdr{height:72px;background:rgba(255,255,255,0.94);border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto minmax(420px,1fr);align-items:center;gap:18px;padding:12px 18px;position:sticky;top:0;z-index:100;backdrop-filter:blur(14px)}
 .logo{display:flex;align-items:center;gap:10px;min-width:172px;font-size:15px;font-weight:800;color:var(--ink);white-space:nowrap}
 .logo::before{content:'測';width:34px;height:34px;border-radius:8px;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:900;box-shadow:0 8px 20px rgba(15,110,86,0.24)}
 .logo span{color:var(--primary)}
 .command-bar{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
 .ubtn{height:36px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;transition:background .18s,border-color .18s,transform .18s}
 .ubtn:hover{background:var(--panel-soft);border-color:var(--line-strong);transform:translateY(-1px)}
+.ubtn:disabled{opacity:.42;cursor:not-allowed;transform:none}
 .active-green{background:var(--primary)!important;color:#fff!important;border-color:var(--primary)!important}
 .inactive-white{background:var(--panel)!important;color:var(--ink)!important;border-color:var(--line)!important}
 .count-badge{font-size:12px;color:var(--primary);font-weight:800;margin-left:-3px;margin-right:4px;white-space:nowrap}
 .dpi-btn-group{height:36px;display:flex;align-items:center;gap:3px;border:1px solid var(--line);padding:3px;border-radius:8px;background:#EEF2EF}
 .dpi-btn{height:28px;padding:0 12px;border-radius:6px;border:none;font-size:12px;font-weight:800;cursor:pointer;transition:.16s;color:#6D675E;background:transparent}
 .dpi-btn.active{background:var(--charcoal);color:#fff;box-shadow:0 6px 14px rgba(35,37,34,0.18)}
-.page-cluster{display:flex;justify-content:flex-end;align-items:center;min-width:214px}
 #pgCtrl{align-items:center;gap:8px;background:var(--panel-soft);border:1px solid var(--line);border-radius:8px;padding:4px}
+#pgCtrl .ubtn{width:34px;padding:0;justify-content:center}
 #pgInfo{font-size:13px;font-weight:800;color:var(--muted);min-width:56px;text-align:center}
-.main-section{height:calc(100vh - 72px);display:grid;grid-template-columns:64px minmax(0,1fr) 336px;border-bottom:1px solid var(--line);overflow:hidden}
-.tool-rail{background:#1E2724;color:#F4F7F5;border-right:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;align-items:center;padding:14px 10px;gap:10px}
-.rail-pill{width:40px;height:40px;border-radius:8px;display:grid;place-items:center;background:rgba(255,255,255,0.08);color:#fff;font-size:18px}
-.rail-pill.active{background:var(--primary)}
-.rail-divider{width:28px;height:1px;background:rgba(255,255,255,0.14);margin:4px 0}
-.rail-metric{writing-mode:vertical-rl;font-size:11px;color:#CFC8BB;font-weight:700;letter-spacing:0;margin-top:auto}
+.main-section{height:calc(100vh - 72px);display:grid;grid-template-columns:minmax(0,1fr) 336px;border-bottom:1px solid var(--line);overflow:hidden}
 .left-editor{overflow:auto;padding:18px;background:#E7EEEA;display:flex;flex-direction:column;position:relative}
 .workspace-top{height:48px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .workspace-title{display:flex;align-items:center;gap:10px}
@@ -70,31 +66,26 @@ button,input{font:inherit}
 .region-thumb-wrap img{max-width:100%;max-height:100%;object-fit:contain}
 .del-btn{cursor:pointer;color:#8A8173;font-size:14px;padding:2px 5px}
 .del-btn:hover{color:var(--red)}
-.sidebar-action{padding:14px 16px;border-top:1px solid var(--line);background:var(--panel)}
+.sidebar-action{padding:14px 16px;border-top:1px solid var(--line);background:var(--panel);display:flex;align-items:center;gap:8px}
+.sidebar-action #btnExtract{flex:1;min-width:0}
 .canvas-wrap{position:relative;display:inline-block;box-shadow:0 16px 38px rgba(34,36,31,0.18);cursor:crosshair;transform-origin:0 0;background:#fff}
 #pdfCanvas{display:block}#overlayCanvas{position:absolute;top:0;left:0}
 .work-section{padding:22px;background:#202624;color:#fff;min-height:100vh;display:none}
-.work-hdr{max-width:1600px;margin:0 auto 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.12);padding-bottom:16px}
+.work-hdr{max-width:1600px;margin:0 auto 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.12);padding-bottom:16px;gap:12px}
 .work-hdr h2{font-size:17px;font-weight:850}
-.review-layout{max-width:1600px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:16px;align-items:start}
-.review-stage{background:#28302D;border:1px solid rgba(255,255,255,0.12);border-radius:8px;min-height:560px;overflow:hidden}
-.review-card{display:grid;grid-template-columns:minmax(300px,1fr) 320px;min-height:560px}
-.active-preview-wrap{background:#121210;display:flex;align-items:center;justify-content:center;min-height:560px;padding:18px}
-.active-preview-wrap img{max-width:100%;max-height:72vh;object-fit:contain;border:1px solid rgba(255,255,255,0.16);box-shadow:0 20px 48px rgba(0,0,0,0.32)}
-.active-controls{border-left:1px solid rgba(255,255,255,0.12);padding:18px;display:flex;flex-direction:column}
-.active-controls h3{font-size:16px;font-weight:850;margin-bottom:4px}
-.active-subtitle{font-size:12px;color:#CFC8BB;margin-bottom:16px}
-.review-strip-panel{background:#28302D;border:1px solid rgba(255,255,255,0.12);border-radius:8px;overflow:hidden}
-.strip-head{height:48px;padding:0 13px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.12);font-size:12px;color:#DCD4C4;font-weight:850}
-.prev-grid{display:flex;flex-direction:column;gap:8px;max-height:calc(100vh - 170px);overflow:auto;padding:10px}
-.pcard{background:#202624;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.12);display:grid;grid-template-columns:66px minmax(0,1fr);gap:10px;padding:8px;cursor:pointer;transition:border-color .16s,background .16s}
+.work-title{display:flex;align-items:baseline;gap:10px;min-width:0}
+.work-count{font-size:12px;color:#DCD4C4;font-weight:850}
+.prev-grid{max-width:1600px;margin:0 auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.pcard{background:#28302D;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.12);display:flex;flex-direction:column;min-width:0;cursor:pointer;transition:border-color .16s,background .16s}
 .pcard.active{border-color:#E0A84D;background:#303A34}
-.pcard-img-wrap{width:66px;height:82px;background:#121210;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:3px;border-radius:6px}
+.pcard-img-wrap{width:100%;height:190px;background:#121210;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:8px}
 .pcard img{max-width:100%;max-height:100%;object-fit:contain;border:1px solid rgba(255,255,255,0.16)}
-.pcard-info{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.pcard-info{min-width:0;display:flex;flex-direction:column;gap:8px;padding:12px 12px 0}
+.pcard-title-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .pcard-title{font-size:12px;font-weight:850;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pcard-note{font-size:11px;color:#CFC8BB}
-.adj-box{padding:0;text-align:left;font-size:12px}
+.adj-box{padding:12px;text-align:left;font-size:12px}
+.control-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
 .btn-group{display:flex;gap:6px;justify-content:center;margin:8px 0}
 .rbtn{background:#39423E;border:1px solid rgba(255,255,255,0.14);color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:800}
 .rbtn:hover{border-color:#D7B37A;color:#FFE8BF}
@@ -118,14 +109,11 @@ button,input{font:inherit}
 .section-divider{grid-column:1 / span 4;height:2px;background:var(--red);margin:5px 0}
 @media (max-width:980px){
   .hdr{height:auto;grid-template-columns:1fr;padding:12px}
-  .command-bar,.page-cluster{justify-content:flex-start}
+  .command-bar{justify-content:flex-start}
   .main-section{height:auto;min-height:calc(100vh - 72px);grid-template-columns:1fr}
-  .tool-rail{display:none}
   .right-sidebar{border-left:none;border-top:1px solid var(--line);min-height:360px}
   .workspace-surface{padding:16px}
-  .review-layout,.review-card{grid-template-columns:1fr}
-  .active-controls{border-left:none;border-top:1px solid rgba(255,255,255,0.12)}
-  .prev-grid{max-height:none}
+  .prev-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:600px){
   body{overflow-x:hidden}
@@ -133,11 +121,14 @@ button,input{font:inherit}
   .command-bar{display:grid;grid-template-columns:1fr;width:100%;max-width:100%;gap:8px}
   .command-bar .ubtn{width:100%;justify-content:center}
   .count-badge{display:none}
-  .page-cluster{min-width:0;width:100%}
   .dpi-btn-group{width:max-content;max-width:100%}
   .workspace-top{height:auto;display:grid;grid-template-columns:1fr;gap:10px}
   .spec-chip{justify-self:start;max-width:100%;white-space:normal}
   .left-editor{padding:16px}
+  .sidebar-action{align-items:stretch;flex-wrap:wrap}
+  #pgCtrl{width:100%;justify-content:center}
+  .prev-grid{grid-template-columns:1fr}
+  .work-hdr{align-items:flex-start;flex-direction:column}
 }
 </style>
 </head>
@@ -161,25 +152,9 @@ button,input{font:inherit}
   <input type="file" id="mainFile" accept=".pdf,image/*" multiple style="display:none">
   <input type="file" id="csvFile" accept=".csv,.xls,.xlsx" style="display:none">
 
-  <div class="page-cluster">
-    <div id="pgCtrl" style="display:none">
-      <button class="ubtn" id="prevPg">◀</button>
-      <span id="pgInfo">1 / 1</span>
-      <button class="ubtn" id="nextPg">▶</button>
-    </div>
-  </div>
 </div>
 
 <div class="main-section">
-  <aside class="tool-rail">
-    <div class="rail-pill active">剪</div>
-    <div class="rail-pill">名</div>
-    <div class="rail-pill">輸</div>
-    <div class="rail-divider"></div>
-    <div class="rail-pill">檢</div>
-    <div class="rail-metric">413 × 531</div>
-  </aside>
-
   <div class="left-editor" id="editorParent">
     <div class="workspace-top">
       <div class="workspace-title">
@@ -213,7 +188,12 @@ button,input{font:inherit}
     </div>
     <div id="regionList"></div>
     <div class="sidebar-action">
-      <button class="btn-go green" id="btnExtract" style="width:100%" disabled>⚡ 執行擷取</button>
+      <div id="pgCtrl" style="display:none">
+        <button class="ubtn" id="prevPg" type="button" title="上一頁（←）">◀</button>
+        <span id="pgInfo">1 / 1</span>
+        <button class="ubtn" id="nextPg" type="button" title="下一頁（→）">▶</button>
+      </div>
+      <button class="btn-go green" id="btnExtract" disabled>⚡ 執行擷取</button>
     </div>
   </div>
 </div>
@@ -233,16 +213,13 @@ button,input{font:inherit}
 
 <div class="work-section" id="workSection">
   <div class="work-hdr">
-    <h2>逐張預覽與微調 (413 × 531)</h2>
+    <div class="work-title">
+      <h2>預覽與微調 (413 × 531)</h2>
+      <span class="work-count" id="reviewCount">0 張</span>
+    </div>
     <button class="btn-go dark" id="btnDL" disabled>⬇ 下載全部 (.zip)</button>
   </div>
-  <div class="review-layout">
-    <div class="review-stage" id="activeReview"></div>
-    <aside class="review-strip-panel">
-      <div class="strip-head"><span>擷取佇列</span><span id="reviewCount">0 張</span></div>
-      <div class="prev-grid" id="prevGrid"></div>
-    </aside>
-  </div>
+  <div class="prev-grid" id="prevGrid"></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -433,6 +410,7 @@ button,input{font:inherit}
     document.getElementById('pgCtrl').style.display = totalPages > 1 ? 'flex' : 'none';
     document.getElementById('canvasWrap').style.display='inline-block';
     document.getElementById('zoomUI').style.display='flex';
+    updatePageControls();
   }
 
   async function changePage(){
@@ -442,6 +420,21 @@ button,input{font:inherit}
     overlayCanvas.width = pdfCanvas.width; overlayCanvas.height = pdfCanvas.height;
     if(isImageMode) ctx.drawImage(pdfCache[currPageNum], 0, 0, pdfCanvas.width, pdfCanvas.height);
     updateZoom(0); drawOverlay();
+    updatePageControls();
+  }
+
+  function updatePageControls(){
+    document.getElementById('pgInfo').textContent = `${currPageNum} / ${totalPages}`;
+    document.getElementById('prevPg').disabled = currPageNum <= 1;
+    document.getElementById('nextPg').disabled = currPageNum >= totalPages;
+  }
+
+  function goPage(delta){
+    if(!isLoaded() || totalPages <= 1) return;
+    const nextPage = Math.max(1, Math.min(totalPages, currPageNum + delta));
+    if(nextPage === currPageNum) return;
+    currPageNum = nextPage;
+    changePage();
   }
 
   function drawOverlay(rb, nextIdx){
@@ -509,7 +502,6 @@ button,input{font:inherit}
 
   function renderPrevList(){
     if (activeResultIndex >= finalImages.length) activeResultIndex = Math.max(0, finalImages.length - 1);
-    renderActiveReview();
     const g = document.getElementById('prevGrid'); g.innerHTML = '';
     const count = document.getElementById('reviewCount');
     if (count) count.textContent = `${finalImages.length} 張`;
@@ -525,45 +517,30 @@ button,input{font:inherit}
       d.innerHTML = `
         <div class="pcard-img-wrap"><img id="prevImg_${i}" src="${img.canvas.toDataURL('image/jpeg', 0.8)}"></div>
         <div class="pcard-info">
-          <div class="pcard-title" id="stripName_${i}">${escapeHtml(img.name)}</div>
+          <div class="pcard-title-row">
+            <div class="pcard-title" id="stripName_${i}">${escapeHtml(img.name)}</div>
+            <div class="pcard-note">#${i + 1}</div>
+          </div>
           <div class="pcard-note" id="stripNote_${i}">#${i + 1} · P${region.page || '-'} · ${region.scale || 100}%</div>
+        </div>
+        <div class="adj-box" onclick="event.stopPropagation()">
+          <div class="control-head"><b>角度</b><span id="degLabel_${i}">旋轉: ${region.angle || 0}°</span></div>
+          <div class="btn-group">
+            <button class="rbtn" onclick="updateRot(${i},-1)">-1°</button>
+            <button class="rbtn" onclick="updateRot(${i},1)">+1°</button>
+          </div>
+          <input id="rotSlider_${i}" type="range" min="-15" max="15" value="${region.angle || 0}" oninput="updateRot(${i}, parseInt(this.value), false, true)" style="width:100%">
+          <div class="control-row">
+            <span class="control-label">縮放</span>
+            <input id="scaleSlider_${i}" type="range" min="50" max="200" step="5" value="${region.scale || 100}" oninput="updateScale(${i}, parseInt(this.value))">
+            <span class="control-value" id="scaleLabel_${i}">${region.scale || 100}%</span>
+          </div>
+          <div class="btn-group"><button class="rbtn" onclick="updateScale(${i},100)">重置縮放</button></div>
+          <input type="text" class="name-input" value="${escapeHtml(img.name)}" oninput="syncName(${i}, this.value)" placeholder="請輸入檔名">
         </div>`;
       g.appendChild(d);
     });
     document.getElementById('btnDL').disabled = false;
-  }
-
-  function renderActiveReview(){
-    const stage = document.getElementById('activeReview');
-    if (!stage) return;
-    if (finalImages.length === 0) {
-      stage.innerHTML = '';
-      return;
-    }
-    const img = finalImages[activeResultIndex];
-    const region = regions[activeResultIndex];
-    stage.innerHTML = `
-      <div class="review-card">
-        <div class="active-preview-wrap">
-          <img id="activePreviewImg" src="${img.canvas.toDataURL('image/jpeg', 0.9)}" alt="目前預覽">
-        </div>
-        <div class="active-controls">
-          <h3 id="activeNameTitle">${escapeHtml(img.name)}</h3>
-          <div class="active-subtitle">第 ${activeResultIndex + 1} 張 / 共 ${finalImages.length} 張 · PDF 第 ${region.page} 頁</div>
-          <div class="adj-box">
-            <div style="display:flex; justify-content:space-between; margin-bottom:6px"><b>角度</b><span id="degLabel_${activeResultIndex}">旋轉: ${region.angle}°</span></div>
-            <div class="btn-group"><button class="rbtn" onclick="updateRot(${activeResultIndex},-1)">-1°</button><button class="rbtn" onclick="updateRot(${activeResultIndex},1)">+1°</button></div>
-            <input id="rotSlider_${activeResultIndex}" type="range" min="-15" max="15" value="${region.angle}" oninput="updateRot(${activeResultIndex}, parseInt(this.value), false, true)" style="width:100%">
-            <div class="control-row">
-              <span class="control-label">縮放</span>
-              <input id="scaleSlider_${activeResultIndex}" type="range" min="50" max="200" step="5" value="${region.scale || 100}" oninput="updateScale(${activeResultIndex}, parseInt(this.value))">
-              <span class="control-value" id="scaleLabel_${activeResultIndex}">${region.scale || 100}%</span>
-            </div>
-            <div class="btn-group"><button class="rbtn" onclick="updateScale(${activeResultIndex},100)">重置縮放</button></div>
-            <input type="text" class="name-input" value="${escapeHtml(img.name)}" oninput="syncName(${activeResultIndex}, this.value)" placeholder="請輸入檔名">
-          </div>
-        </div>
-      </div>`;
   }
 
   function setActiveResult(idx){
@@ -574,9 +551,7 @@ button,input{font:inherit}
   window.syncName = (idx, val) => {
     finalImages[idx].name = val;
     finalImages[idx].manualEdited = true;
-    const activeTitle = document.getElementById('activeNameTitle');
     const stripTitle = document.getElementById(`stripName_${idx}`);
-    if (idx === activeResultIndex && activeTitle) activeTitle.textContent = val;
     if (stripTitle) stripTitle.textContent = val;
   };
 
@@ -598,7 +573,6 @@ button,input{font:inherit}
     const preview = document.getElementById(`prevImg_${idx}`);
     const label = document.getElementById(`scaleLabel_${idx}`);
     const degLabel = document.getElementById(`degLabel_${idx}`);
-    const activePreview = document.getElementById('activePreviewImg');
     const stripNote = document.getElementById(`stripNote_${idx}`);
     const rotSlider = document.getElementById(`rotSlider_${idx}`);
     const scaleSlider = document.getElementById(`scaleSlider_${idx}`);
@@ -608,7 +582,6 @@ button,input{font:inherit}
     if (stripNote) stripNote.textContent = `#${idx + 1} · P${regions[idx].page} · ${regions[idx].scale}%`;
     if (rotSlider) rotSlider.value = regions[idx].angle;
     if (scaleSlider) scaleSlider.value = regions[idx].scale;
-    if (idx === activeResultIndex && activePreview) activePreview.src = finalImages[idx].canvas.toDataURL('image/jpeg', 0.9);
   }
 
   function getDpiJpeg(canvas, dpi) {
@@ -640,8 +613,15 @@ button,input{font:inherit}
   };
 
   function getPos(e){ var r=overlayCanvas.getBoundingClientRect(); return { x: (e.clientX - r.left) / currentZoom, y: (e.clientY - r.top) / currentZoom }; }
-  document.getElementById('prevPg').onclick=()=>{ if(currPageNum>1){ currPageNum--; changePage(); }};
-  document.getElementById('nextPg').onclick=()=>{ if(currPageNum<totalPages){ currPageNum++; changePage(); }};
+  document.getElementById('prevPg').onclick=()=>goPage(-1);
+  document.getElementById('nextPg').onclick=()=>goPage(1);
+  document.addEventListener('keydown', (e) => {
+    const tag = document.activeElement ? document.activeElement.tagName : '';
+    const isTyping = ['INPUT','TEXTAREA','SELECT'].includes(tag) || document.activeElement?.isContentEditable;
+    if(isTyping || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    if(e.key === 'ArrowLeft') { e.preventDefault(); goPage(-1); }
+    if(e.key === 'ArrowRight') { e.preventDefault(); goPage(1); }
+  });
   window.delRegion = (idx) => {
     regions.splice(idx, 1);
     finalImages.splice(idx, 1);
