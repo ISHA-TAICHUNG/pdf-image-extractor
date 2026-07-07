@@ -50,7 +50,10 @@ button,input{font:inherit}
 .spec-chip{border:1px solid var(--line);background:rgba(255,255,255,0.58);border-radius:8px;padding:7px 10px;font-size:12px;font-weight:800;color:var(--muted)}
 .workspace-surface{flex:1;min-height:0;border:1px solid var(--line);border-radius:8px;background:#F5F8F6;box-shadow:var(--shadow);overflow:auto;padding:26px}
 #scrollContainer{position:relative;display:inline-block;text-align:left;margin:0}
-.zoom-sticky-box{position:sticky;bottom:18px;left:0;z-index:150;width:fit-content;pointer-events:none;margin-top:18px}
+.editor-bottom-tools{position:sticky;bottom:18px;z-index:150;display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;pointer-events:none;margin-top:18px}
+.zoom-sticky-box,.page-sticky-box{pointer-events:auto}
+.zoom-sticky-box{width:fit-content}
+.page-sticky-box{margin-left:auto;display:flex;justify-content:flex-end}
 .zoom-ctrl{display:flex;gap:5px;background:rgba(255,255,255,0.96);padding:6px;border-radius:8px;box-shadow:var(--shadow);border:1px solid var(--line);pointer-events:auto}
 .zbtn{width:34px;height:34px;border-radius:6px;border:1px solid var(--line);background:var(--panel);font-size:18px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink)}
 .zbtn:hover{border-color:var(--primary);color:var(--primary)}
@@ -66,8 +69,8 @@ button,input{font:inherit}
 .region-thumb-wrap img{max-width:100%;max-height:100%;object-fit:contain}
 .del-btn{cursor:pointer;color:#8A8173;font-size:14px;padding:2px 5px}
 .del-btn:hover{color:var(--red)}
-.sidebar-action{flex:0 0 auto;padding:14px 16px;border-top:1px solid var(--line);background:var(--panel);display:flex;align-items:center;gap:8px}
-.sidebar-action #btnExtract{flex:1;min-width:0}
+.sidebar-action{flex:0 0 auto;padding:14px 16px;border-top:1px solid var(--line);background:var(--panel);display:grid;gap:8px}
+.sidebar-action #btnExtract{width:100%;min-width:0}
 .canvas-wrap{position:relative;display:inline-block;box-shadow:0 16px 38px rgba(34,36,31,0.18);cursor:crosshair;transform-origin:0 0;background:#fff}
 #pdfCanvas{display:block}#overlayCanvas{position:absolute;top:0;left:0}
 .work-section{padding:22px;background:#202624;color:#fff;min-height:100vh;display:none}
@@ -97,7 +100,13 @@ button,input{font:inherit}
 .btn-go{padding:12px 18px;border-radius:8px;border:none;font-weight:850;cursor:pointer}
 .btn-go.green{background:var(--primary);color:#fff;width:100%;box-shadow:0 12px 24px rgba(15,110,86,0.22)}
 .btn-go.green:disabled{opacity:.42;cursor:not-allowed;box-shadow:none}
+.btn-go.loading{opacity:1;cursor:wait}
+.btn-go.green.loading:disabled{opacity:1;cursor:wait;box-shadow:0 12px 24px rgba(15,110,86,0.22)}
 .btn-go.dark{background:#fff;color:var(--ink)}
+.extract-status{display:none;align-items:center;justify-content:center;gap:8px;min-height:22px;font-size:12px;font-weight:850;color:var(--primary)}
+.extract-status.active{display:flex}
+.spinner{width:14px;height:14px;border-radius:999px;border:2px solid currentColor;border-right-color:transparent;display:inline-block;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(29,37,33,0.72);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-content{background:var(--panel);width:480px;padding:22px;border-radius:8px;color:var(--ink);max-height:90vh;overflow-y:auto;box-shadow:var(--shadow)}
 .modal-hint{font-size:12px;color:var(--muted);line-height:1.5;margin:-5px 0 15px}
@@ -125,7 +134,8 @@ button,input{font:inherit}
   .workspace-top{height:auto;display:grid;grid-template-columns:1fr;gap:10px}
   .spec-chip{justify-self:start;max-width:100%;white-space:normal}
   .left-editor{padding:16px}
-  .sidebar-action{align-items:stretch;flex-wrap:wrap}
+  .editor-bottom-tools{flex-wrap:wrap;align-items:flex-end}
+  .page-sticky-box{width:100%}
   #pgCtrl{width:100%;justify-content:center}
   .prev-grid{grid-template-columns:1fr}
   .work-hdr{align-items:flex-start;flex-direction:column}
@@ -171,13 +181,22 @@ button,input{font:inherit}
         </div>
       </div>
     </div>
-    <div class="zoom-sticky-box">
+    <div class="editor-bottom-tools">
+      <div class="zoom-sticky-box">
         <div class="zoom-ctrl" id="zoomUI" style="display:none">
             <button class="zbtn" onclick="updateZoom(-0.1)">-</button>
             <div class="zinfo" id="zoomVal">100%</div>
             <button class="zbtn" onclick="updateZoom(0.1)">+</button>
             <button class="zbtn" onclick="updateZoom(0, true)" style="font-size:11px">重置</button>
         </div>
+      </div>
+      <div class="page-sticky-box">
+        <div id="pgCtrl" style="display:none">
+          <button class="ubtn" id="prevPg" type="button" title="上一頁（←）">◀</button>
+          <span id="pgInfo">1 / 1</span>
+          <button class="ubtn" id="nextPg" type="button" title="下一頁（→）">▶</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -188,11 +207,7 @@ button,input{font:inherit}
     </div>
     <div id="regionList"></div>
     <div class="sidebar-action">
-      <div id="pgCtrl" style="display:none">
-        <button class="ubtn" id="prevPg" type="button" title="上一頁（←）">◀</button>
-        <span id="pgInfo">1 / 1</span>
-        <button class="ubtn" id="nextPg" type="button" title="下一頁（→）">▶</button>
-      </div>
+      <div class="extract-status" id="extractStatus" aria-live="polite"><span class="spinner"></span><span>擷取中，請稍候...</span></div>
       <button class="btn-go green" id="btnExtract" disabled>⚡ 執行擷取</button>
     </div>
   </div>
@@ -234,7 +249,7 @@ button,input{font:inherit}
   var pdfDoc=null, isImageMode=false, totalPages=1, currentZoom=1.0;
   var currPageNum=1, pdfCache={}, csvRows=[], finalImages=[], manualNums=[], regions=[];
   var activeResultIndex = 0;
-  var namingSource = 'manual', currentSelectedDpi = 600;
+  var namingSource = 'manual', currentSelectedDpi = 600, isExtracting = false;
 
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   const pdfCanvas=document.getElementById('pdfCanvas'), ctx=pdfCanvas.getContext('2d');
@@ -264,6 +279,19 @@ button,input{font:inherit}
       '"': '&quot;',
       "'": '&#39;'
     }[ch]));
+  }
+
+  function updateExtractButton() {
+    const btn = document.getElementById('btnExtract');
+    const status = document.getElementById('extractStatus');
+    btn.disabled = isExtracting || regions.length === 0;
+    btn.classList.toggle('loading', isExtracting);
+    btn.innerHTML = isExtracting ? '<span class="spinner"></span> 擷取中...' : '⚡ 執行擷取';
+    status.classList.toggle('active', isExtracting);
+  }
+
+  function waitForPaint() {
+    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   }
 
   function getCheckedManualNums() {
@@ -359,6 +387,8 @@ button,input{font:inherit}
     pdfCache = {}; regions = []; finalImages = []; activeResultIndex = 0; currPageNum = 1; currentZoom = 1.0;
     document.getElementById('workSection').style.display = 'none';
     document.getElementById('btnDL').disabled = true;
+    isExtracting = false;
+    updateExtractButton();
     if(files[0].type === "application/pdf") { isImageMode = false; await loadPDF(files[0]); }
     else { isImageMode = true; await loadMultipleImages(files); }
     updateZoom(0, true);
@@ -459,28 +489,41 @@ button,input{font:inherit}
         </div>
         <div class="region-thumb-wrap"><img src="${r.thumb}"></div>
       </div>`).join('');
-    document.getElementById('btnExtract').disabled = regions.length === 0;
+    updateExtractButton();
     drawOverlay();
     if (document.getElementById('workSection').style.display === 'block') renderPrevList();
     setTimeout(() => { list.scrollTop = list.scrollHeight; }, 50);
   }
 
   document.getElementById('btnExtract').onclick=async function(){
-    finalImages=[];
-    const exportScale = 6.0;
+    if (isExtracting || regions.length === 0) return;
+    isExtracting = true;
+    updateExtractButton();
+    await waitForPaint();
 
-    for(let pg of [...new Set(regions.map(r=>r.page))]){
-      if(!isImageMode && !pdfCache[pg]){
-        let page = await pdfDoc.getPage(pg); let vp = page.getViewport({scale:exportScale});
-        let tmp = document.createElement('canvas'); tmp.width=vp.width; tmp.height=vp.height;
-        await page.render({canvasContext:tmp.getContext('2d'), viewport:vp}).promise; pdfCache[pg] = tmp;
+    try {
+      finalImages=[];
+      const exportScale = 6.0;
+
+      for(let pg of [...new Set(regions.map(r=>r.page))]){
+        if(!isImageMode && !pdfCache[pg]){
+          let page = await pdfDoc.getPage(pg); let vp = page.getViewport({scale:exportScale});
+          let tmp = document.createElement('canvas'); tmp.width=vp.width; tmp.height=vp.height;
+          await page.render({canvasContext:tmp.getContext('2d'), viewport:vp}).promise; pdfCache[pg] = tmp;
+        }
+        const ratio = isImageMode ? (pdfCache[pg].width / pdfCanvas.width) : (exportScale / 1.5);
+        regions.forEach((r,i)=>{ if(r.page===pg) renderSingleImage(i, pg, ratio); });
       }
-      const ratio = isImageMode ? (pdfCache[pg].width / pdfCanvas.width) : (exportScale / 1.5);
-      regions.forEach((r,i)=>{ if(r.page===pg) renderSingleImage(i, pg, ratio); });
+      document.getElementById('workSection').style.display='block';
+      renderPrevList();
+      document.getElementById('workSection').scrollIntoView({behavior:'smooth'});
+    } catch (err) {
+      console.error(err);
+      alert('擷取失敗，請重新確認 PDF 或框選範圍後再試一次。');
+    } finally {
+      isExtracting = false;
+      updateExtractButton();
     }
-    document.getElementById('workSection').style.display='block';
-    renderPrevList();
-    document.getElementById('workSection').scrollIntoView({behavior:'smooth'});
   };
 
   function renderSingleImage(idx, pg, ratio){
