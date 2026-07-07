@@ -2,96 +2,167 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>電腦測驗大頭照擷取系統</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#F0EFE9;color:#1C1C1A;overflow-y:auto}
-.hdr{background:#fff;border-bottom:1px solid #DDDBD2;padding:10px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;height:60px}
-.logo{font-size:15px;font-weight:600;color:#1C1C1A}.logo span{color:#0F6E56}
-
-.ubtn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:8px;border:1px solid #DDDBD2;background:#fff;font-size:13px;font-weight:500;cursor:pointer;transition:0.2s}
-.ubtn:hover{background:#F5F4F0}
-.active-green { background:#0F6E56 !important; color:#fff !important; border-color:#0F6E56 !important }
-.inactive-white { background:#fff !important; color:#1C1C1A !important; border-color:#DDDBD2 !important }
-.count-badge{font-size:13px; color:#0F6E56; font-weight:600; margin-left:-5px; margin-right:10px}
-
-/* DPI 切換按鈕專用樣式 */
-.dpi-btn-group { display: flex; gap: 4px; border: 1px solid #DDDBD2; padding: 3px; border-radius: 8px; background: #F5F4F0; margin-right: 10px; }
-.dpi-btn { padding: 5px 12px; border-radius: 6px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.15s; color: #666; background: transparent; }
-.dpi-btn.active { background: #0F6E56; color: #fff; box-shadow: 0 2px 6px rgba(15,110,86,0.2); }
-
-/* 右側製作標記樣式 */
-.maker-tag { font-size: 12px; color: #888; font-weight: 500; letter-spacing: 0.5px; white-space: nowrap; }
-
-.main-section{display:flex; height:calc(100vh - 60px); border-bottom:2px solid #0F6E56}
-.left-editor{flex:1; overflow:auto; padding:40px; background:#E8E7E1; display:block; position:relative;}
-#scrollContainer {position: relative; display: inline-block; text-align: left; margin: 0;}
-
-.zoom-sticky-box {position: sticky; bottom: 20px; left: 20px; z-index: 150; width: fit-content; pointer-events: none; margin-top: 20px;}
-.zoom-ctrl{display:flex; gap:5px; background:rgba(255,255,255,0.95); padding:8px; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.15); border:1px solid #DDDBD2; pointer-events: auto;}
-.zbtn{width:36px; height:36px; border-radius:6px; border:1px solid #DDDBD2; background:#fff; font-size:20px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center}
-.zinfo{min-width:50px; text-align:center; line-height:36px; font-size:12px; font-weight:600}
-
-.right-sidebar{width:300px; background:#fff; border-left:1px solid #DDDBD2; display:flex; flex-direction:column}
-#regionList { flex:1; overflow-y:auto; padding:10px; background: #F9F9F7; scroll-behavior: smooth; }
-
-.region-item { background:#fff; border:1px solid #DDDBD2; border-radius:8px; margin-bottom:10px; overflow:hidden; display:flex; flex-direction:column; position:relative; }
-.region-item-hdr { padding:6px 10px; display:flex; justify-content:space-between; align-items:center; background:#f0f0f0; border-bottom:1px solid #eee; font-size:11px; font-weight:bold; }
-.region-thumb-wrap { width:100%; height:100px; background:#eee; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-.region-thumb-wrap img { max-width:100%; max-height:100%; object-fit:contain; }
-.del-btn { cursor:pointer; color:#999; font-size:14px; padding: 2px 5px; }
-
-.canvas-wrap{position:relative; display:inline-block; box-shadow:0 2px 25px rgba(0,0,0,0.15); cursor:crosshair; transform-origin: 0 0;}
-#pdfCanvas{display:block}#overlayCanvas{position:absolute; top:0; left:0}
-
-.work-section{padding:40px 20px; background:#1E1E2E; color:#fff; min-height:100vh; display:none}
-.work-hdr{max-width:1600px; margin:0 auto 30px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; padding-bottom:20px}
-.prev-grid{max-width:1600px; margin:0 auto; display:grid; grid-template-columns: repeat(5, 1fr); gap:15px}
-.pcard{background:#2B2B3D; border-radius:10px; overflow:hidden; border:1px solid #444; display:flex; flex-direction:column}
-.pcard-img-wrap{width:100%; height:220px; background:#000; display:flex; align-items:center; justify-content:center; overflow:hidden; padding:5px}
-.pcard img{max-width:100%; max-height:100%; object-fit:contain; border:1px solid #555}
-
-.adj-box{padding:12px; text-align:center; font-size:12px}
-.btn-group{display:flex; gap:5px; justify-content:center; margin:8px 0}
-.rbtn{background:#3A3A4E; border:1px solid #555; color:#fff; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:11px}
-.control-row{display:flex; align-items:center; gap:8px; margin-top:8px}
-.control-label{width:38px; color:#d8d8e6; text-align:left; white-space:nowrap}
-.control-row input[type="range"]{flex:1; accent-color:#0F6E56; cursor:pointer}
-.control-value{width:46px; color:#fff; text-align:right; font-variant-numeric:tabular-nums}
-.name-input{width:100%; background:#1e1e2e; border:1px solid #555; color:#fff; padding:6px; border-radius:4px; margin-top:8px; font-size:11px}
-.btn-go{padding:12px 24px; border-radius:8px; border:none; font-weight:600; cursor:pointer}
-.btn-go.green{background:#0F6E56; color:#fff}
-.btn-go.dark{background:#fff; color:#1C1C1A}
-
-.modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:200; display:none; align-items:center; justify-content:center }
-.modal-content { background:#fff; width:480px; padding:25px; border-radius:15px; color:#111; max-height: 90vh; overflow-y: auto; }
-.modal-hint { font-size:12px; color:#666; line-height:1.5; margin: -5px 0 15px; }
-.num-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 5px }
-.num-item { display:flex; align-items:center; gap:8px; padding:8px; border:1px solid #eee; border-radius:6px; font-size:13px; cursor:pointer }
-.section-divider { grid-column: 1 / span 4; height: 2px; background: #FF4D4F; margin: 5px 0 }
+:root{
+  --bg:#F4F7F5;
+  --panel:#FFFFFF;
+  --panel-soft:#F8FAF8;
+  --ink:#1D2521;
+  --muted:#66706B;
+  --line:#DDE4DE;
+  --line-strong:#BAC8BF;
+  --primary:#0F6E56;
+  --primary-weak:#E5F4EF;
+  --amber:#C77A1B;
+  --red:#D84E45;
+  --charcoal:#202725;
+  --shadow:0 18px 40px rgba(36,39,34,0.10);
+}
+html,body{min-height:100%}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);overflow-y:auto}
+button,input{font:inherit}
+.hdr{height:72px;background:rgba(255,255,255,0.94);border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto minmax(420px,1fr) auto;align-items:center;gap:18px;padding:12px 18px;position:sticky;top:0;z-index:100;backdrop-filter:blur(14px)}
+.logo{display:flex;align-items:center;gap:10px;min-width:172px;font-size:15px;font-weight:800;color:var(--ink);white-space:nowrap}
+.logo::before{content:'測';width:34px;height:34px;border-radius:8px;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:900;box-shadow:0 8px 20px rgba(15,110,86,0.24)}
+.logo span{color:var(--primary)}
+.command-bar{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+.ubtn{height:36px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;transition:background .18s,border-color .18s,transform .18s}
+.ubtn:hover{background:var(--panel-soft);border-color:var(--line-strong);transform:translateY(-1px)}
+.active-green{background:var(--primary)!important;color:#fff!important;border-color:var(--primary)!important}
+.inactive-white{background:var(--panel)!important;color:var(--ink)!important;border-color:var(--line)!important}
+.count-badge{font-size:12px;color:var(--primary);font-weight:800;margin-left:-3px;margin-right:4px;white-space:nowrap}
+.dpi-btn-group{height:36px;display:flex;align-items:center;gap:3px;border:1px solid var(--line);padding:3px;border-radius:8px;background:#EEF2EF}
+.dpi-btn{height:28px;padding:0 12px;border-radius:6px;border:none;font-size:12px;font-weight:800;cursor:pointer;transition:.16s;color:#6D675E;background:transparent}
+.dpi-btn.active{background:var(--charcoal);color:#fff;box-shadow:0 6px 14px rgba(35,37,34,0.18)}
+.page-cluster{display:flex;justify-content:flex-end;align-items:center;min-width:214px}
+#pgCtrl{align-items:center;gap:8px;background:var(--panel-soft);border:1px solid var(--line);border-radius:8px;padding:4px}
+#pgInfo{font-size:13px;font-weight:800;color:var(--muted);min-width:56px;text-align:center}
+.main-section{height:calc(100vh - 72px);display:grid;grid-template-columns:64px minmax(0,1fr) 336px;border-bottom:1px solid var(--line);overflow:hidden}
+.tool-rail{background:#1E2724;color:#F4F7F5;border-right:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;align-items:center;padding:14px 10px;gap:10px}
+.rail-pill{width:40px;height:40px;border-radius:8px;display:grid;place-items:center;background:rgba(255,255,255,0.08);color:#fff;font-size:18px}
+.rail-pill.active{background:var(--primary)}
+.rail-divider{width:28px;height:1px;background:rgba(255,255,255,0.14);margin:4px 0}
+.rail-metric{writing-mode:vertical-rl;font-size:11px;color:#CFC8BB;font-weight:700;letter-spacing:0;margin-top:auto}
+.left-editor{overflow:auto;padding:18px;background:#E7EEEA;display:flex;flex-direction:column;position:relative}
+.workspace-top{height:48px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.workspace-title{display:flex;align-items:center;gap:10px}
+.workspace-title h2{font-size:16px;line-height:1;font-weight:850}
+.status-dot{width:10px;height:10px;border-radius:999px;background:var(--amber);box-shadow:0 0 0 4px rgba(185,108,40,0.14)}
+.spec-chip{border:1px solid var(--line);background:rgba(255,255,255,0.58);border-radius:8px;padding:7px 10px;font-size:12px;font-weight:800;color:var(--muted)}
+.workspace-surface{flex:1;min-height:0;border:1px solid var(--line);border-radius:8px;background:#F5F8F6;box-shadow:var(--shadow);overflow:auto;padding:26px}
+#scrollContainer{position:relative;display:inline-block;text-align:left;margin:0}
+.zoom-sticky-box{position:sticky;bottom:18px;left:0;z-index:150;width:fit-content;pointer-events:none;margin-top:18px}
+.zoom-ctrl{display:flex;gap:5px;background:rgba(255,255,255,0.96);padding:6px;border-radius:8px;box-shadow:var(--shadow);border:1px solid var(--line);pointer-events:auto}
+.zbtn{width:34px;height:34px;border-radius:6px;border:1px solid var(--line);background:var(--panel);font-size:18px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink)}
+.zbtn:hover{border-color:var(--primary);color:var(--primary)}
+.zinfo{min-width:52px;text-align:center;line-height:34px;font-size:12px;font-weight:850;color:var(--muted)}
+.right-sidebar{width:auto;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;min-width:0}
+.sidebar-head{height:64px;padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.sidebar-head h3{font-size:14px;font-weight:850}
+.sidebar-tag{font-size:11px;font-weight:800;color:var(--primary);background:var(--primary-weak);border-radius:999px;padding:4px 8px}
+#regionList{flex:1;overflow-y:auto;padding:12px;background:var(--panel-soft);scroll-behavior:smooth}
+.region-item{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:10px;overflow:hidden;display:flex;flex-direction:column;position:relative}
+.region-item-hdr{padding:7px 10px;display:flex;justify-content:space-between;align-items:center;background:#F0F4F1;border-bottom:1px solid var(--line);font-size:11px;font-weight:850}
+.region-thumb-wrap{width:100%;height:104px;background:#E5ECE8;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.region-thumb-wrap img{max-width:100%;max-height:100%;object-fit:contain}
+.del-btn{cursor:pointer;color:#8A8173;font-size:14px;padding:2px 5px}
+.del-btn:hover{color:var(--red)}
+.sidebar-action{padding:14px 16px;border-top:1px solid var(--line);background:var(--panel)}
+.canvas-wrap{position:relative;display:inline-block;box-shadow:0 16px 38px rgba(34,36,31,0.18);cursor:crosshair;transform-origin:0 0;background:#fff}
+#pdfCanvas{display:block}#overlayCanvas{position:absolute;top:0;left:0}
+.work-section{padding:22px;background:#202624;color:#fff;min-height:100vh;display:none}
+.work-hdr{max-width:1600px;margin:0 auto 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.12);padding-bottom:16px}
+.work-hdr h2{font-size:17px;font-weight:850}
+.review-layout{max-width:1600px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:16px;align-items:start}
+.review-stage{background:#28302D;border:1px solid rgba(255,255,255,0.12);border-radius:8px;min-height:560px;overflow:hidden}
+.review-card{display:grid;grid-template-columns:minmax(300px,1fr) 320px;min-height:560px}
+.active-preview-wrap{background:#121210;display:flex;align-items:center;justify-content:center;min-height:560px;padding:18px}
+.active-preview-wrap img{max-width:100%;max-height:72vh;object-fit:contain;border:1px solid rgba(255,255,255,0.16);box-shadow:0 20px 48px rgba(0,0,0,0.32)}
+.active-controls{border-left:1px solid rgba(255,255,255,0.12);padding:18px;display:flex;flex-direction:column}
+.active-controls h3{font-size:16px;font-weight:850;margin-bottom:4px}
+.active-subtitle{font-size:12px;color:#CFC8BB;margin-bottom:16px}
+.review-strip-panel{background:#28302D;border:1px solid rgba(255,255,255,0.12);border-radius:8px;overflow:hidden}
+.strip-head{height:48px;padding:0 13px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.12);font-size:12px;color:#DCD4C4;font-weight:850}
+.prev-grid{display:flex;flex-direction:column;gap:8px;max-height:calc(100vh - 170px);overflow:auto;padding:10px}
+.pcard{background:#202624;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.12);display:grid;grid-template-columns:66px minmax(0,1fr);gap:10px;padding:8px;cursor:pointer;transition:border-color .16s,background .16s}
+.pcard.active{border-color:#E0A84D;background:#303A34}
+.pcard-img-wrap{width:66px;height:82px;background:#121210;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:3px;border-radius:6px}
+.pcard img{max-width:100%;max-height:100%;object-fit:contain;border:1px solid rgba(255,255,255,0.16)}
+.pcard-info{min-width:0;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.pcard-title{font-size:12px;font-weight:850;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pcard-note{font-size:11px;color:#CFC8BB}
+.adj-box{padding:0;text-align:left;font-size:12px}
+.btn-group{display:flex;gap:6px;justify-content:center;margin:8px 0}
+.rbtn{background:#39423E;border:1px solid rgba(255,255,255,0.14);color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:800}
+.rbtn:hover{border-color:#D7B37A;color:#FFE8BF}
+.control-row{display:flex;align-items:center;gap:8px;margin-top:8px}
+.control-label{width:38px;color:#DCD4C4;text-align:left;white-space:nowrap}
+.control-row input[type="range"]{flex:1;accent-color:var(--primary);cursor:pointer}
+.control-value{width:46px;color:#fff;text-align:right;font-variant-numeric:tabular-nums}
+.name-input{width:100%;background:#1C1B18;border:1px solid rgba(255,255,255,0.16);color:#fff;padding:7px;border-radius:6px;margin-top:8px;font-size:12px}
+.btn-go{padding:12px 18px;border-radius:8px;border:none;font-weight:850;cursor:pointer}
+.btn-go.green{background:var(--primary);color:#fff;width:100%;box-shadow:0 12px 24px rgba(15,110,86,0.22)}
+.btn-go.green:disabled{opacity:.42;cursor:not-allowed;box-shadow:none}
+.btn-go.dark{background:#fff;color:var(--ink)}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(29,37,33,0.72);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-content{background:var(--panel);width:480px;padding:22px;border-radius:8px;color:var(--ink);max-height:90vh;overflow-y:auto;box-shadow:var(--shadow)}
+.modal-hint{font-size:12px;color:var(--muted);line-height:1.5;margin:-5px 0 15px}
+.num-toolbar{background:var(--panel-soft);padding:12px;border-radius:8px;margin-bottom:15px;display:flex;gap:10px;align-items:center}
+.num-toolbar input{height:30px;border:1px solid var(--line);border-radius:6px;padding:0 8px}
+.num-toolbar button{height:30px;border:1px solid var(--line);border-radius:6px;background:#fff;padding:0 8px;cursor:pointer}
+.num-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:5px}
+.num-item{display:flex;align-items:center;gap:8px;padding:8px;border:1px solid var(--line);border-radius:6px;font-size:13px;cursor:pointer;background:#fff}
+.section-divider{grid-column:1 / span 4;height:2px;background:var(--red);margin:5px 0}
+@media (max-width:980px){
+  .hdr{height:auto;grid-template-columns:1fr;padding:12px}
+  .command-bar,.page-cluster{justify-content:flex-start}
+  .main-section{height:auto;min-height:calc(100vh - 72px);grid-template-columns:1fr}
+  .tool-rail{display:none}
+  .right-sidebar{border-left:none;border-top:1px solid var(--line);min-height:360px}
+  .workspace-surface{padding:16px}
+  .review-layout,.review-card{grid-template-columns:1fr}
+  .active-controls{border-left:none;border-top:1px solid rgba(255,255,255,0.12)}
+  .prev-grid{max-height:none}
+}
+@media (max-width:600px){
+  body{overflow-x:hidden}
+  .logo{min-width:0}
+  .command-bar{display:grid;grid-template-columns:1fr;width:100%;max-width:100%;gap:8px}
+  .command-bar .ubtn{width:100%;justify-content:center}
+  .count-badge{display:none}
+  .page-cluster{min-width:0;width:100%}
+  .dpi-btn-group{width:max-content;max-width:100%}
+  .workspace-top{height:auto;display:grid;grid-template-columns:1fr;gap:10px}
+  .spec-chip{justify-self:start;max-width:100%;white-space:normal}
+  .left-editor{padding:16px}
+}
 </style>
 </head>
 <body>
 
 <div class="hdr">
   <div class="logo">電腦測驗<span>大頭照擷取系統</span></div>
-  <button class="ubtn" id="fileBtn">📁 上傳檔案</button>
-  <span id="fileCount" class="count-badge"></span>
-  <button class="ubtn inactive-white" id="csvBtn">📊 上傳名單</button>
-  <span id="csvCount" class="count-badge"></span>
-  <button class="ubtn inactive-white" id="manualBtn">🔢 手動選擇編號</button>
-  <span id="manualCount" class="count-badge"></span>
-
-  <div class="dpi-btn-group">
-    <button type="button" class="dpi-btn" id="dpi300Btn" onclick="switchDpi(300)">300 DPI</button>
-    <button type="button" class="dpi-btn active" id="dpi600Btn" onclick="switchDpi(600)">600 DPI</button>
+  <div class="command-bar">
+    <button class="ubtn" id="fileBtn">📁 上傳檔案</button>
+    <span id="fileCount" class="count-badge"></span>
+    <button class="ubtn inactive-white" id="csvBtn">📊 上傳名單</button>
+    <span id="csvCount" class="count-badge"></span>
+    <button class="ubtn inactive-white" id="manualBtn">🔢 手動編號</button>
+    <span id="manualCount" class="count-badge"></span>
+    <div class="dpi-btn-group">
+      <button type="button" class="dpi-btn" id="dpi300Btn" onclick="switchDpi(300)">300 DPI</button>
+      <button type="button" class="dpi-btn active" id="dpi600Btn" onclick="switchDpi(600)">600 DPI</button>
+    </div>
   </div>
 
   <input type="file" id="mainFile" accept=".pdf,image/*" multiple style="display:none">
   <input type="file" id="csvFile" accept=".csv,.xls,.xlsx" style="display:none">
 
-  <div style="flex:1; display:flex; align-items:center; justify-content:center">
-    <div id="pgCtrl" style="display:none; align-items:center; gap:10px">
+  <div class="page-cluster">
+    <div id="pgCtrl" style="display:none">
       <button class="ubtn" id="prevPg">◀</button>
       <span id="pgInfo">1 / 1</span>
       <button class="ubtn" id="nextPg">▶</button>
@@ -100,12 +171,30 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#F0EFE9;color:#1C1C1
 </div>
 
 <div class="main-section">
+  <aside class="tool-rail">
+    <div class="rail-pill active">剪</div>
+    <div class="rail-pill">名</div>
+    <div class="rail-pill">輸</div>
+    <div class="rail-divider"></div>
+    <div class="rail-pill">檢</div>
+    <div class="rail-metric">413 × 531</div>
+  </aside>
+
   <div class="left-editor" id="editorParent">
-    <div id="scrollContainer">
+    <div class="workspace-top">
+      <div class="workspace-title">
+        <span class="status-dot"></span>
+        <h2>裁切工作區</h2>
+      </div>
+      <div class="spec-chip">JPG / 白底 / DPI 可切換</div>
+    </div>
+    <div class="workspace-surface">
+      <div id="scrollContainer">
         <div class="canvas-wrap" id="canvasWrap" style="display:none">
           <canvas id="pdfCanvas"></canvas>
           <canvas id="overlayCanvas"></canvas>
         </div>
+      </div>
     </div>
     <div class="zoom-sticky-box">
         <div class="zoom-ctrl" id="zoomUI" style="display:none">
@@ -118,9 +207,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#F0EFE9;color:#1C1C1
   </div>
 
   <div class="right-sidebar">
-    <div style="padding:15px; font-weight:bold; border-bottom:1px solid #eee">框選清單 (即時預覽)</div>
+    <div class="sidebar-head">
+      <h3>框選清單</h3>
+      <span class="sidebar-tag">即時預覽</span>
+    </div>
     <div id="regionList"></div>
-    <div style="padding:15px">
+    <div class="sidebar-action">
       <button class="btn-go green" id="btnExtract" style="width:100%" disabled>⚡ 執行擷取</button>
     </div>
   </div>
@@ -130,7 +222,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#F0EFE9;color:#1C1C1
   <div class="modal-content">
     <div style="display:flex; justify-content:space-between; margin-bottom:15px"><h3>手動編號</h3><span style="cursor:pointer" onclick="toggleModal(false)">✕</span></div>
     <p class="modal-hint">勾選後會依「框選清單」順序自動套用；只保留有截圖的項目，不需要的號碼可取消勾選。</p>
-    <div style="background:#f8f9fa; padding:12px; border-radius:8px; margin-bottom:15px; display:flex; gap:10px; align-items:center">
+    <div class="num-toolbar">
       <span>最大：</span><input type="number" id="maxNumInput" value="60" style="width:60px">
       <button onclick="setAllCheck(true)">全選</button><button onclick="setAllCheck(false)">全不選</button>
     </div>
@@ -141,10 +233,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#F0EFE9;color:#1C1C1
 
 <div class="work-section" id="workSection">
   <div class="work-hdr">
-    <h2>預覽與微調 (嚴格鎖定尺寸: 413 x 531)</h2>
+    <h2>逐張預覽與微調 (413 × 531)</h2>
     <button class="btn-go dark" id="btnDL" disabled>⬇ 下載全部 (.zip)</button>
   </div>
-  <div class="prev-grid" id="prevGrid"></div>
+  <div class="review-layout">
+    <div class="review-stage" id="activeReview"></div>
+    <aside class="review-strip-panel">
+      <div class="strip-head"><span>擷取佇列</span><span id="reviewCount">0 張</span></div>
+      <div class="prev-grid" id="prevGrid"></div>
+    </aside>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -157,7 +255,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#F0EFE9;color:#1C1C1
   const COLORS = ['#E24B4A', '#2E7D32', '#1565C0', '#F9A825', '#6A1B9A', '#00838F', '#AD1457'];
 
   var pdfDoc=null, isImageMode=false, totalPages=1, currentZoom=1.0;
-  var currPageNum=1, pdfCache={}, csvRows=[], regions=[], finalImages=[], manualNums=[];
+  var currPageNum=1, pdfCache={}, csvRows=[], finalImages=[], manualNums=[], regions=[];
+  var activeResultIndex = 0;
   var namingSource = 'manual', currentSelectedDpi = 600;
 
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -280,7 +379,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#F0EFE9;color:#1C1C1
 
   document.getElementById('mainFile').onchange=async function(){
     const files = Array.from(this.files); if(files.length === 0) return;
-    pdfCache = {}; regions = []; currPageNum = 1; currentZoom = 1.0;
+    pdfCache = {}; regions = []; finalImages = []; activeResultIndex = 0; currPageNum = 1; currentZoom = 1.0;
+    document.getElementById('workSection').style.display = 'none';
+    document.getElementById('btnDL').disabled = true;
     if(files[0].type === "application/pdf") { isImageMode = false; await loadPDF(files[0]); }
     else { isImageMode = true; await loadMultipleImages(files); }
     updateZoom(0, true);
@@ -367,7 +468,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#F0EFE9;color:#1C1C1
       </div>`).join('');
     document.getElementById('btnExtract').disabled = regions.length === 0;
     drawOverlay();
-    if (finalImages.length > 0 && document.getElementById('workSection').style.display === 'block') renderPrevList();
+    if (document.getElementById('workSection').style.display === 'block') renderPrevList();
     setTimeout(() => { list.scrollTop = list.scrollHeight; }, 50);
   }
 
@@ -407,50 +508,108 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#F0EFE9;color:#1C1C1
   }
 
   function renderPrevList(){
+    if (activeResultIndex >= finalImages.length) activeResultIndex = Math.max(0, finalImages.length - 1);
+    renderActiveReview();
     const g = document.getElementById('prevGrid'); g.innerHTML = '';
+    const count = document.getElementById('reviewCount');
+    if (count) count.textContent = `${finalImages.length} 張`;
+    if (finalImages.length === 0) {
+      document.getElementById('btnDL').disabled = true;
+      return;
+    }
     finalImages.forEach((img, i)=>{
+      const region = regions[i] || {};
       let d = document.createElement('div'); d.className = 'pcard';
-      d.innerHTML = `<div style="height:4px; background:${COLORS[i % COLORS.length]}"></div>
+      if (i === activeResultIndex) d.classList.add('active');
+      d.onclick = () => setActiveResult(i);
+      d.innerHTML = `
         <div class="pcard-img-wrap"><img id="prevImg_${i}" src="${img.canvas.toDataURL('image/jpeg', 0.8)}"></div>
-        <div class="adj-box">
-          <div style="display:flex; justify-content:space-between; margin-bottom:5px"><b>#${i+1}</b><span id="degLabel_${i}">旋轉: ${regions[i].angle}°</span></div>
-          <div class="btn-group"><button class="rbtn" onclick="updateRot(${i},-1)">-1°</button><button class="rbtn" onclick="updateRot(${i},1)">+1°</button></div>
-          <input type="range" min="-15" max="15" value="${regions[i].angle}" oninput="updateRot(${i}, parseInt(this.value), false, true)" style="width:100%">
-          <div class="control-row">
-            <span class="control-label">縮放</span>
-            <input type="range" min="50" max="200" step="5" value="${regions[i].scale || 100}" oninput="updateScale(${i}, parseInt(this.value))">
-            <span class="control-value" id="scaleLabel_${i}">${regions[i].scale || 100}%</span>
-          </div>
-          <div class="btn-group"><button class="rbtn" onclick="updateScale(${i},100)">重置縮放</button></div>
-          <input type="text" class="name-input" value="${escapeHtml(img.name)}" oninput="syncName(${i}, this.value)" placeholder="請輸入檔名">
+        <div class="pcard-info">
+          <div class="pcard-title" id="stripName_${i}">${escapeHtml(img.name)}</div>
+          <div class="pcard-note" id="stripNote_${i}">#${i + 1} · P${region.page || '-'} · ${region.scale || 100}%</div>
         </div>`;
       g.appendChild(d);
     });
     document.getElementById('btnDL').disabled = false;
   }
 
+  function renderActiveReview(){
+    const stage = document.getElementById('activeReview');
+    if (!stage) return;
+    if (finalImages.length === 0) {
+      stage.innerHTML = '';
+      return;
+    }
+    const img = finalImages[activeResultIndex];
+    const region = regions[activeResultIndex];
+    stage.innerHTML = `
+      <div class="review-card">
+        <div class="active-preview-wrap">
+          <img id="activePreviewImg" src="${img.canvas.toDataURL('image/jpeg', 0.9)}" alt="目前預覽">
+        </div>
+        <div class="active-controls">
+          <h3 id="activeNameTitle">${escapeHtml(img.name)}</h3>
+          <div class="active-subtitle">第 ${activeResultIndex + 1} 張 / 共 ${finalImages.length} 張 · PDF 第 ${region.page} 頁</div>
+          <div class="adj-box">
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px"><b>角度</b><span id="degLabel_${activeResultIndex}">旋轉: ${region.angle}°</span></div>
+            <div class="btn-group"><button class="rbtn" onclick="updateRot(${activeResultIndex},-1)">-1°</button><button class="rbtn" onclick="updateRot(${activeResultIndex},1)">+1°</button></div>
+            <input id="rotSlider_${activeResultIndex}" type="range" min="-15" max="15" value="${region.angle}" oninput="updateRot(${activeResultIndex}, parseInt(this.value), false, true)" style="width:100%">
+            <div class="control-row">
+              <span class="control-label">縮放</span>
+              <input id="scaleSlider_${activeResultIndex}" type="range" min="50" max="200" step="5" value="${region.scale || 100}" oninput="updateScale(${activeResultIndex}, parseInt(this.value))">
+              <span class="control-value" id="scaleLabel_${activeResultIndex}">${region.scale || 100}%</span>
+            </div>
+            <div class="btn-group"><button class="rbtn" onclick="updateScale(${activeResultIndex},100)">重置縮放</button></div>
+            <input type="text" class="name-input" value="${escapeHtml(img.name)}" oninput="syncName(${activeResultIndex}, this.value)" placeholder="請輸入檔名">
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function setActiveResult(idx){
+    activeResultIndex = Math.max(0, Math.min(finalImages.length - 1, idx));
+    renderPrevList();
+  }
+
   window.syncName = (idx, val) => {
     finalImages[idx].name = val;
     finalImages[idx].manualEdited = true;
+    const activeTitle = document.getElementById('activeNameTitle');
+    const stripTitle = document.getElementById(`stripName_${idx}`);
+    if (idx === activeResultIndex && activeTitle) activeTitle.textContent = val;
+    if (stripTitle) stripTitle.textContent = val;
   };
 
   window.updateRot = (idx, val, reset=false, fromSlider=false) => {
-    regions[idx].angle = fromSlider ? val : regions[idx].angle + val;
+    regions[idx].angle = Math.max(-15, Math.min(15, fromSlider ? val : regions[idx].angle + val));
     const ratio = isImageMode ? (pdfCache[regions[idx].page].width / pdfCanvas.width) : (6.0 / 1.5);
     renderSingleImage(idx, regions[idx].page, ratio);
-    document.getElementById(`prevImg_${idx}`).src = finalImages[idx].canvas.toDataURL('image/jpeg', 0.8);
-    document.getElementById(`degLabel_${idx}`).textContent = `旋轉: ${regions[idx].angle}°`;
+    refreshResultPreview(idx);
   };
 
   window.updateScale = (idx, scale) => {
     regions[idx].scale = Math.max(50, Math.min(200, parseInt(scale) || 100));
     const ratio = isImageMode ? (pdfCache[regions[idx].page].width / pdfCanvas.width) : (6.0 / 1.5);
     renderSingleImage(idx, regions[idx].page, ratio);
+    refreshResultPreview(idx);
+  };
+
+  function refreshResultPreview(idx){
     const preview = document.getElementById(`prevImg_${idx}`);
     const label = document.getElementById(`scaleLabel_${idx}`);
+    const degLabel = document.getElementById(`degLabel_${idx}`);
+    const activePreview = document.getElementById('activePreviewImg');
+    const stripNote = document.getElementById(`stripNote_${idx}`);
+    const rotSlider = document.getElementById(`rotSlider_${idx}`);
+    const scaleSlider = document.getElementById(`scaleSlider_${idx}`);
     if (preview) preview.src = finalImages[idx].canvas.toDataURL('image/jpeg', 0.8);
     if (label) label.textContent = `${regions[idx].scale}%`;
-  };
+    if (degLabel) degLabel.textContent = `旋轉: ${regions[idx].angle}°`;
+    if (stripNote) stripNote.textContent = `#${idx + 1} · P${regions[idx].page} · ${regions[idx].scale}%`;
+    if (rotSlider) rotSlider.value = regions[idx].angle;
+    if (scaleSlider) scaleSlider.value = regions[idx].scale;
+    if (idx === activeResultIndex && activePreview) activePreview.src = finalImages[idx].canvas.toDataURL('image/jpeg', 0.9);
+  }
 
   function getDpiJpeg(canvas, dpi) {
     const dataUrl = canvas.toDataURL('image/jpeg', 0.95), base64 = dataUrl.split(',')[1], raw = atob(base64), uint8 = new Uint8Array(raw.length);
