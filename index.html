@@ -530,7 +530,8 @@ button,input{font:inherit}
     let r = regions[idx], pdfCX = r.cx * ratio, pdfCY = r.cy * ratio, origW = r.w * ratio, origH = r.h * ratio;
     let scale = Math.max(50, Math.min(200, parseInt(r.scale || 100)));
     r.scale = scale;
-    let drawW = TARGET_W * (scale / 100), drawH = TARGET_H * (scale / 100);
+    let fitScale = Math.min(TARGET_W / origW, TARGET_H / origH);
+    let drawW = origW * fitScale * (scale / 100), drawH = origH * fitScale * (scale / 100);
 
     let final = document.createElement('canvas'); final.width = TARGET_W; final.height = TARGET_H;
     let fCtx = final.getContext('2d'); fCtx.fillStyle = "#FFFFFF"; fCtx.fillRect(0, 0, TARGET_W, TARGET_H);
